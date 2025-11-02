@@ -9,10 +9,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // Wealthsimple-inspired palette
-        'ws-coral': '#FF5A5F',
-        'ws-coral-dark': '#E84A4F',
-        'ws-coral-light': '#FFE8E9',
+        // Modern purple palette
+        'ws-coral': '#A78BFA', // Light Purple
+        'ws-coral-dark': '#8B5CF6',
+        'ws-coral-light': '#EDE9FE',
         'ws-green': '#00D68F',
         'ws-green-light': '#E6FBF4',
         'ws-yellow': '#FFB800',
@@ -50,8 +50,8 @@ const config: Config = {
         'ws-sm': '0 2px 8px rgba(0, 0, 0, 0.08)',
         'ws-md': '0 4px 16px rgba(0, 0, 0, 0.12)',
         'ws-lg': '0 8px 32px rgba(0, 0, 0, 0.16)',
-        'ws-coral': '0 4px 12px rgba(255, 90, 95, 0.3)',
-        'ws-coral-hover': '0 6px 20px rgba(255, 90, 95, 0.4)',
+        'ws-coral': '0 4px 12px rgba(167, 139, 250, 0.3)',
+        'ws-coral-hover': '0 6px 20px rgba(167, 139, 250, 0.4)',
       },
       animation: {
         'fade-in-up': 'fadeInUp 400ms cubic-bezier(0.16, 1, 0.3, 1) both',

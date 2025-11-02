@@ -174,7 +174,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-ws-gray-50 pb-safe">
+    <main className="min-h-screen bg-ws-gray-50 pb-24">
       {/* Hero Section - Input Area */}
       <section className="bg-white px-6 pt-safe pt-12 pb-8 border-b border-ws-gray-300">
         <div className="max-w-2xl mx-auto">
@@ -242,23 +242,6 @@ export default function Home() {
             ))}
           </div>
 
-          {/* Navigation */}
-          <div className="flex gap-3 mt-6">
-            <Link
-              href="/history"
-              className="flex-1 py-3 rounded-xl bg-ws-gray-100 text-ws-gray-900 font-semibold text-center hover:bg-ws-gray-300 transition-colors"
-              onClick={() => haptic('light')}
-            >
-              📋 History
-            </Link>
-            <Link
-              href="/settings"
-              className="flex-1 py-3 rounded-xl bg-ws-gray-100 text-ws-gray-900 font-semibold text-center hover:bg-ws-gray-300 transition-colors"
-              onClick={() => haptic('light')}
-            >
-              ⚙️ Settings
-            </Link>
-          </div>
         </div>
       </section>
 
@@ -336,9 +319,39 @@ export default function Home() {
       )}
 
       {/* PWA Install Prompt (only show if not installed) */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 px-4 py-2 bg-ws-gray-900/90 text-white text-xs rounded-full backdrop-blur-sm no-print animate-fade-in-up">
+      <div className="fixed bottom-24 left-1/2 -translate-x-1/2 px-4 py-2 bg-ws-gray-900/90 text-white text-xs rounded-full backdrop-blur-sm no-print animate-fade-in-up">
         ⬆️ Add to Home Screen for best experience
       </div>
+
+      {/* Bottom Navigation Bar - Mobbin Style with Glassmorphism */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-ws-gray-300/20 backdrop-blur-xl bg-white/80 supports-[backdrop-filter]:bg-white/60 pb-safe">
+        <div className="max-w-2xl mx-auto px-6 py-3 flex items-center justify-around">
+          <Link
+            href="/"
+            className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all hover:bg-ws-gray-100/50 active:scale-95"
+            onClick={() => haptic('light')}
+          >
+            <span className="text-2xl">🏠</span>
+            <span className="text-[11px] font-semibold text-ws-gray-900">PB</span>
+          </Link>
+          <Link
+            href="/history"
+            className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all hover:bg-ws-gray-100/50 active:scale-95"
+            onClick={() => haptic('light')}
+          >
+            <span className="text-2xl">📊</span>
+            <span className="text-[11px] font-medium text-ws-gray-600">History</span>
+          </Link>
+          <Link
+            href="/settings"
+            className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all hover:bg-ws-gray-100/50 active:scale-95"
+            onClick={() => haptic('light')}
+          >
+            <span className="text-2xl">⚙️</span>
+            <span className="text-[11px] font-medium text-ws-gray-600">Settings</span>
+          </Link>
+        </div>
+      </nav>
     </main>
   );
 }

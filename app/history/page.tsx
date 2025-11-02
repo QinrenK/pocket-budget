@@ -112,7 +112,7 @@ export default function HistoryPage() {
   const totalAmount = filteredTransactions.reduce((sum, tx) => sum + tx.amount, 0);
 
   return (
-    <main className="min-h-screen bg-ws-gray-50 pb-safe">
+    <main className="min-h-screen bg-ws-gray-50 pb-24">
       {/* Header */}
       <header className="bg-white px-6 pt-safe pt-6 pb-6 border-b border-ws-gray-300">
         <div className="max-w-4xl mx-auto">
@@ -139,14 +139,14 @@ export default function HistoryPage() {
           />
 
           {/* Filters */}
-          <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+          <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2 -mx-6 px-6">
             {/* Date Range */}
             <button
               onClick={() => {
                 haptic('light');
                 setDateRange('week');
               }}
-              className={`chip ${dateRange === 'week' ? 'chip-active' : 'chip-inactive'}`}
+              className={`chip whitespace-nowrap flex-shrink-0 ${dateRange === 'week' ? 'chip-active' : 'chip-inactive'}`}
             >
               Week
             </button>
@@ -155,7 +155,7 @@ export default function HistoryPage() {
                 haptic('light');
                 setDateRange('month');
               }}
-              className={`chip ${dateRange === 'month' ? 'chip-active' : 'chip-inactive'}`}
+              className={`chip whitespace-nowrap flex-shrink-0 ${dateRange === 'month' ? 'chip-active' : 'chip-inactive'}`}
             >
               Month
             </button>
@@ -164,19 +164,19 @@ export default function HistoryPage() {
                 haptic('light');
                 setDateRange('all');
               }}
-              className={`chip ${dateRange === 'all' ? 'chip-active' : 'chip-inactive'}`}
+              className={`chip whitespace-nowrap flex-shrink-0 ${dateRange === 'all' ? 'chip-active' : 'chip-inactive'}`}
             >
               All Time
             </button>
 
             {/* Category Filter */}
-            <div className="border-l border-ws-gray-300 pl-3 ml-1" />
+            <div className="border-l border-ws-gray-300 h-10 mx-1 flex-shrink-0" />
             <button
               onClick={() => {
                 haptic('light');
                 setFilterCategory(null);
               }}
-              className={`chip ${filterCategory === null ? 'chip-active' : 'chip-inactive'}`}
+              className={`chip whitespace-nowrap flex-shrink-0 ${filterCategory === null ? 'chip-active' : 'chip-inactive'}`}
             >
               All Categories
             </button>
@@ -187,7 +187,7 @@ export default function HistoryPage() {
                   haptic('light');
                   setFilterCategory(filterCategory === cat.id ? null : cat.id);
                 }}
-                className={`chip ${filterCategory === cat.id ? 'chip-active' : 'chip-inactive'}`}
+                className={`chip whitespace-nowrap flex-shrink-0 ${filterCategory === cat.id ? 'chip-active' : 'chip-inactive'}`}
               >
                 {cat.icon} {cat.name}
               </button>
@@ -277,6 +277,36 @@ export default function HistoryPage() {
           </div>
         )}
       </section>
+
+      {/* Bottom Navigation Bar - Mobbin Style with Glassmorphism */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-ws-gray-300/20 backdrop-blur-xl bg-white/80 supports-[backdrop-filter]:bg-white/60 pb-safe">
+        <div className="max-w-2xl mx-auto px-6 py-3 flex items-center justify-around">
+          <Link
+            href="/"
+            className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all hover:bg-ws-gray-100/50 active:scale-95"
+            onClick={() => haptic('light')}
+          >
+            <span className="text-2xl">🏠</span>
+            <span className="text-[11px] font-medium text-ws-gray-600">PB</span>
+          </Link>
+          <Link
+            href="/history"
+            className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all hover:bg-ws-gray-100/50 active:scale-95"
+            onClick={() => haptic('light')}
+          >
+            <span className="text-2xl">📊</span>
+            <span className="text-[11px] font-semibold text-ws-gray-900">History</span>
+          </Link>
+          <Link
+            href="/settings"
+            className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all hover:bg-ws-gray-100/50 active:scale-95"
+            onClick={() => haptic('light')}
+          >
+            <span className="text-2xl">⚙️</span>
+            <span className="text-[11px] font-medium text-ws-gray-600">Settings</span>
+          </Link>
+        </div>
+      </nav>
     </main>
   );
 }
