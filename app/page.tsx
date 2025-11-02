@@ -31,6 +31,7 @@ export default function Home() {
   });
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Auto-focus input on mount
@@ -54,9 +55,10 @@ export default function Home() {
     }
   }, [input]);
 
-  // Fetch rollups on mount and after transactions
+  // Fetch rollups and transactions on mount and after new transaction
   useEffect(() => {
     fetchRollups();
+    fetchRecentTransactions();
   }, []);
 
   const fetchRollups = async () => {
@@ -81,6 +83,22 @@ export default function Home() {
       setRollups((prev) => ({ ...prev, ...newRollups }));
     } catch (error) {
       console.error('Failed to fetch rollups:', error);
+    }
+  };
+
+  const fetchRecentTransactions = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/transactions/recent');
+      if (!response.ok) {
+        throw new Error('Failed to fetch transactions');
+      }
+      const data = await response.json();
+      setTransactions(data.transactions || []);
+    } catch (error) {
+      console.error('Failed to fetch transactions:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -125,8 +143,9 @@ export default function Home() {
       setInput('');
       setParsePreview('');
 
-      // Update rollups
+      // Update rollups and transactions
       fetchRollups();
+      fetchRecentTransactions();
 
       // Show success toast
       setToastMessage(
@@ -224,11 +243,17 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Recent Transactions - Placeholder for now */}
+      {/* Recent Transactions */}
       <section className="px-6 py-8 max-w-2xl mx-auto">
         <h2 className="text-h2 mb-4">Recent</h2>
 
-        {transactions.length === 0 ? (
+        {isLoading ? (
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="skeleton" style={{ animationDelay: `${i * 100}ms` }}></div>
+            ))}
+          </div>
+        ) : transactions.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-6xl mb-4 opacity-50">📝</div>
             <p className="text-ws-gray-500">
@@ -244,10 +269,14 @@ export default function Home() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-base font-medium text-ws-gray-900">{tx.category}</span>
+                      <span className="text-base font-medium text-ws-gray-900">
+                        {tx.category || 'Uncategorized'}
+                      </span>
                     </div>
                     <p className="text-sm text-ws-gray-500">
-                      {tx.items.map((i) => i.name).join(', ')}
+                      {tx.items?.length > 0 
+                        ? tx.items.map((item) => item.name).join(', ')
+                        : 'No items'}
                     </p>
                   </div>
                   <div className="text-right">
