@@ -1,0 +1,182 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* CSS Variables inspired by Wealthsimple */
+  :root {
+    --ws-coral: #FF5A5F;
+    --ws-coral-dark: #E84A4F;
+    --ws-coral-light: #FFE8E9;
+    --ws-green: #00D68F;
+    --ws-green-light: #E6FBF4;
+    --ws-yellow: #FFB800;
+    --ws-yellow-light: #FFF8E6;
+    --ws-red: #FF3B30;
+    --ws-red-light: #FFE8E6;
+  }
+
+  /* Reset and base styles */
+  * {
+    @apply border-ws-gray-300;
+  }
+
+  body {
+    @apply bg-ws-gray-50 text-ws-gray-900 antialiased;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Tabular numbers for financial data */
+  .amount,
+  [data-amount] {
+    font-variant-numeric: tabular-nums;
+    @apply font-semibold;
+  }
+
+  /* Remove tap highlight on mobile */
+  button, a, input, textarea {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* iOS safe area support */
+  .pt-safe {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .pl-safe {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .pr-safe {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Smooth scrolling on iOS */
+  .scroll-smooth {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  /* Focus visible styles */
+  *:focus-visible {
+    @apply outline-none ring-4 ring-ws-coral-light;
+  }
+}
+
+@layer components {
+  /* Button variants */
+  .btn-primary {
+    @apply w-full bg-ws-coral text-white font-semibold text-base px-6 py-4 rounded-2xl shadow-ws-coral transition-all duration-200 ease-expo hover:bg-ws-coral-dark hover:shadow-ws-coral-hover hover:-translate-y-0.5 active:translate-y-0 active:shadow-ws-coral disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none;
+  }
+
+  .btn-secondary {
+    @apply w-full bg-ws-gray-100 text-ws-gray-900 font-semibold text-base px-6 py-4 rounded-2xl transition-all duration-200 ease-expo hover:bg-ws-gray-300 active:bg-ws-gray-300;
+  }
+
+  .btn-ghost {
+    @apply text-ws-gray-700 font-medium px-4 py-2 rounded-lg transition-colors duration-150 hover:bg-ws-gray-100 active:bg-ws-gray-300;
+  }
+
+  /* Input field */
+  .input-field {
+    @apply w-full bg-white border-2 border-ws-gray-300 rounded-xl px-4 py-4 text-lg font-medium placeholder:text-ws-gray-500 focus:border-ws-coral focus:ring-4 focus:ring-ws-coral-light transition-all duration-200;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-white rounded-2xl p-5 shadow-ws-sm hover:shadow-ws-md transition-all duration-300 ease-expo border border-ws-gray-100;
+  }
+
+  /* Period chip (toggle) */
+  .chip {
+    @apply px-6 py-3 rounded-full font-semibold text-sm transition-all duration-200;
+  }
+
+  .chip-active {
+    @apply bg-ws-gray-900 text-white shadow-lg;
+  }
+
+  .chip-inactive {
+    @apply bg-ws-gray-100 text-ws-gray-700 hover:bg-ws-gray-300;
+  }
+
+  /* Category pill */
+  .category-pill {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-colors duration-150;
+  }
+
+  /* Toast notification */
+  .toast {
+    @apply fixed bottom-8 right-8 bg-ws-gray-900 text-white px-6 py-4 rounded-2xl shadow-ws-lg animate-slide-in-right backdrop-blur-sm;
+  }
+
+  /* Loading skeleton */
+  .skeleton {
+    @apply animate-shimmer h-12 rounded-xl bg-gradient-to-r from-ws-gray-100 via-ws-gray-300 to-ws-gray-100;
+    background-size: 1000px 100%;
+  }
+}
+
+@layer utilities {
+  /* Text utilities */
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* No select (for buttons) */
+  .no-select {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* GPU acceleration */
+  .gpu-accelerate {
+    transform: translateZ(0);
+    will-change: transform;
+  }
+
+  /* Hide scrollbar */
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Dark mode (future) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    /* Dark mode variables - will be implemented later */
+  }
+}
+
+/* Print styles */
+@media print {
+  body {
+    @apply bg-white text-black;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+}
+
