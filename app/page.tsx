@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { parseExpenseText } from '@/lib/parser';
 import { formatCurrency } from '@/lib/currency';
 import { haptic, hapticSuccess, hapticError } from '@/lib/haptics';
@@ -185,7 +186,7 @@ export default function Home() {
 
           {/* Main Input */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="relative">
+            <div className="relative mb-8">
               <input
                 ref={inputRef}
                 type="text"
@@ -200,13 +201,13 @@ export default function Home() {
                 spellCheck="false"
               />
               {parsePreview && (
-                <div className="absolute left-4 -bottom-6 text-xs text-ws-gray-500 animate-fade-in-up">
-                  {parsePreview}
+                <div className="mt-2 text-sm text-ws-gray-600 font-medium animate-fade-in-up">
+                  Preview: {parsePreview}
                 </div>
               )}
             </div>
 
-            <div className="flex gap-3 mt-8">
+            <div className="flex gap-3">
               <button
                 type="submit"
                 className="btn-primary flex-1"
@@ -240,6 +241,24 @@ export default function Home() {
               </button>
             ))}
           </div>
+
+          {/* Navigation */}
+          <div className="flex gap-3 mt-6">
+            <Link
+              href="/history"
+              className="flex-1 py-3 rounded-xl bg-ws-gray-100 text-ws-gray-900 font-semibold text-center hover:bg-ws-gray-300 transition-colors"
+              onClick={() => haptic('light')}
+            >
+              📋 History
+            </Link>
+            <Link
+              href="/settings"
+              className="flex-1 py-3 rounded-xl bg-ws-gray-100 text-ws-gray-900 font-semibold text-center hover:bg-ws-gray-300 transition-colors"
+              onClick={() => haptic('light')}
+            >
+              ⚙️ Settings
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -265,11 +284,17 @@ export default function Home() {
         ) : (
           <div className="space-y-3">
             {transactions.map((tx, i) => (
-              <div key={tx.id} className="card animate-fade-in-up" style={{ animationDelay: `${i * 50}ms` }}>
+              <Link
+                key={tx.id}
+                href="/history"
+                onClick={() => haptic('light')}
+                className="card animate-fade-in-up block hover:shadow-ws-md transition-all"
+                style={{ animationDelay: `${i * 50}ms` }}
+              >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-base font-medium text-ws-gray-900">
+                      <span className="text-base font-semibold text-ws-gray-900">
                         {tx.category || 'Uncategorized'}
                       </span>
                     </div>
@@ -291,7 +316,7 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}
