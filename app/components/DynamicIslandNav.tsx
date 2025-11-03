@@ -72,14 +72,13 @@ export default function DynamicIslandNav() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[100] pointer-events-none">
-      <div className="flex justify-center pb-4 pb-safe">
+    <div className="fixed bottom-0 left-0 right-0 z-[100]" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
+      <div className="flex justify-center">
         <div
           className="
             relative overflow-hidden
             w-[540px] max-w-[calc(100vw-32px)] h-[56px] rounded-full
             transition-all duration-300 ease-out
-            pointer-events-auto
           "
         >
         {/* Glassmorphism background with adaptive transparency */}
