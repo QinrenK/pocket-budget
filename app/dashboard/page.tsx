@@ -29,6 +29,9 @@ export default function DashboardPage() {
   const [totalSpent, setTotalSpent] = useState(0);
   const [transactionCount, setTransactionCount] = useState(0);
   const [averagePerDay, setAveragePerDay] = useState(0);
+  const [averagePerSpendingDay, setAveragePerSpendingDay] = useState(0);
+  const [averageTransactionAmount, setAverageTransactionAmount] = useState(0);
+  const [daysWithTransactions, setDaysWithTransactions] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   
   // Date range state
@@ -62,6 +65,9 @@ export default function DashboardPage() {
         setTotalSpent(data.totalSpent || 0);
         setTransactionCount(data.transactionCount || 0);
         setAveragePerDay(data.averagePerDay || 0);
+        setAveragePerSpendingDay(data.averagePerSpendingDay || 0);
+        setAverageTransactionAmount(data.averageTransactionAmount || 0);
+        setDaysWithTransactions(data.daysWithTransactions || 0);
       }
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
@@ -328,18 +334,38 @@ export default function DashboardPage() {
               </div>
             </section>
 
-            {/* Quick Stats */}
+            {/* Enhanced Stats */}
             <section className="grid grid-cols-2 gap-4">
               <div className="card text-center">
-                <p className="text-sm text-ws-gray-500 mb-2">Average per Day</p>
+                <p className="text-xs text-ws-gray-500 mb-1">Daily Average</p>
+                <p className="text-sm text-ws-gray-400 mb-2">(All Days)</p>
                 <p className="text-2xl font-bold tabular-nums text-ws-gray-900">
                   {formatCurrency(averagePerDay)}
                 </p>
               </div>
               <div className="card text-center">
-                <p className="text-sm text-ws-gray-500 mb-2">Total Transactions</p>
+                <p className="text-xs text-ws-gray-500 mb-1">Spending Day Avg</p>
+                <p className="text-sm text-ws-gray-400 mb-2">({daysWithTransactions} days)</p>
                 <p className="text-2xl font-bold tabular-nums text-ws-gray-900">
-                  {transactionCount}
+                  {formatCurrency(averagePerSpendingDay)}
+                </p>
+              </div>
+              <div className="card text-center">
+                <p className="text-xs text-ws-gray-500 mb-1">Per Transaction</p>
+                <p className="text-sm text-ws-gray-400 mb-2">({transactionCount} total)</p>
+                <p className="text-2xl font-bold tabular-nums text-ws-gray-900">
+                  {formatCurrency(averageTransactionAmount)}
+                </p>
+              </div>
+              <div className="card text-center bg-ws-coral-light border-ws-coral">
+                <p className="text-xs text-ws-gray-500 mb-1">Spending Frequency</p>
+                <p className="text-sm text-ws-gray-400 mb-2">
+                  {daysWithTransactions > 0 && transactionCount > 0
+                    ? `${(transactionCount / daysWithTransactions).toFixed(1)} txns/day`
+                    : 'No data'}
+                </p>
+                <p className="text-2xl font-bold tabular-nums text-ws-gray-900">
+                  {daysWithTransactions}/{Math.ceil((new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 60 * 60 * 24)) + 1}
                 </p>
               </div>
             </section>

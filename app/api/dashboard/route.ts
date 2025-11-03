@@ -140,12 +140,22 @@ export async function GET(request: NextRequest) {
         percentage: totalSpent > 0 ? (cat.total / totalSpent) * 100 : 0,
       }));
 
-    // Calculate actual days with transactions
-    let actualDays = 1; // Default to 1 to avoid division by zero
-    if (earliestDate && latestDate) {
-      const diffTime = Math.abs(latestDate.getTime() - earliestDate.getTime());
-      actualDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end day
-    }
+    // Calculate days in selected date range (not just transaction span)
+    const diffTime = Math.abs(endDate.getTime() - startDate.getTime());
+    const daysInRange = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both days
+    
+    // Count unique days with transactions
+    const uniqueDays = new Set<string>();
+    transactions?.forEach((tx) => {
+      const date = new Date(tx.ts);
+      uniqueDays.add(date.toISOString().split('T')[0]);
+    });
+    const daysWithTransactions = uniqueDays.size;
+
+    // Calculate meaningful averages
+    const averagePerDay = daysInRange > 0 ? totalSpent / daysInRange : 0; // Average across entire period
+    const averagePerSpendingDay = daysWithTransactions > 0 ? totalSpent / daysWithTransactions : 0; // Average on days you actually spent
+    const averageTransactionAmount = (transactions?.length || 0) > 0 ? totalSpent / (transactions?.length || 1) : 0;
 
     // Generate spending trend (simplified for now)
     const spendingTrend = [
@@ -160,8 +170,11 @@ export async function GET(request: NextRequest) {
       spendingTrend,
       totalSpent,
       transactionCount: transactions?.length || 0,
-      actualDays,
-      averagePerDay: actualDays > 0 ? totalSpent / actualDays : 0,
+      daysInRange,
+      daysWithTransactions,
+      averagePerDay, // Average across all days in range
+      averagePerSpendingDay, // Average on days with spending
+      averageTransactionAmount, // Average per transaction
     });
   } catch (error) {
     console.error('Dashboard API error:', error);
