@@ -57,13 +57,16 @@ export default function DynamicIslandNav() {
 
   return (
     <nav 
-      className="fixed left-0 right-0" 
       style={{ 
-        zIndex: 9999,
+        position: 'fixed',
+        left: 0,
+        right: 0,
         bottom: 0,
+        zIndex: 9999,
         paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
         paddingLeft: '16px',
         paddingRight: '16px',
+        pointerEvents: 'auto',
       }}
     >
       <div className="flex justify-center w-full">
