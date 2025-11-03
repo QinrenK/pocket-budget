@@ -70,6 +70,33 @@
   "categories": ["finance", "productivity"],
   "dir": "ltr",
   "lang": "en-US",
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "share_target": {
+    "action": "/api/auth/callback",
+    "method": "GET",
+    "params": {
+      "url": "url"
+    }
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+pocketbudget",
+      "url": "/?url=%s"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Add Expense",
+      "short_name": "Add",
+      "description": "Quickly add a new expense",
+      "url": "/",
+      "icons": [
+        {
+          "src": "/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
 }
 
