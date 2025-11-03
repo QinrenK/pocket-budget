@@ -9,8 +9,30 @@ export default function AuthRedirectPage() {
   const [isPWA, setIsPWA] = useState(false);
   const [isProcessing, setIsProcessing] = useState(true);
   const [showManualOptions, setShowManualOptions] = useState(false);
+  const [isIOS, setIsIOS] = useState(false);
+  const [browserInfo, setBrowserInfo] = useState('');
 
   useEffect(() => {
+    // Detect iOS
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as { MSStream?: unknown }).MSStream;
+    setIsIOS(iOS);
+
+    // Detect browser type on iOS
+    if (iOS) {
+      const ua = navigator.userAgent;
+      if (ua.includes('CriOS')) {
+        setBrowserInfo('Chrome');
+      } else if (ua.includes('FxiOS')) {
+        setBrowserInfo('Firefox');
+      } else if (ua.includes('EdgiOS')) {
+        setBrowserInfo('Edge');
+      } else if (ua.includes('Safari') && !ua.includes('CriOS') && !ua.includes('FxiOS')) {
+        setBrowserInfo('Safari');
+      } else {
+        setBrowserInfo('Unknown');
+      }
+    }
+
     // Check if running in PWA mode
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
       || (window.navigator as { standalone?: boolean }).standalone 
@@ -73,6 +95,14 @@ export default function AuthRedirectPage() {
           <p className="text-sm text-ws-gray-500">
             Click the button below to complete sign in
           </p>
+          {isIOS && browserInfo && browserInfo !== 'Safari' && (
+            <div className="mt-4 p-3 bg-ws-yellow-light border border-ws-yellow rounded-lg">
+              <p className="text-xs text-ws-gray-900">
+                💡 <strong>iOS Tip:</strong> You're using {browserInfo}. For the best experience, 
+                install this app from <strong>Safari</strong> (Share → Add to Home Screen).
+              </p>
+            </div>
+          )}
         </div>
 
         <div 

@@ -146,23 +146,41 @@ If it opens in browser first (iOS), they'll see a clear "Complete Sign In" butto
 5. **Professional**: No context switching
 6. **Reliable**: Multiple fallbacks
 
-## ⚠️ Known Limitations
+## ⚠️ Known Limitations & iOS Browser Handling
 
-### iOS Safari
-- PWA support is limited on iOS
-- Links may open in Safari first
-- User needs to tap "Complete Sign In"
-- **This is an iOS platform limitation**
+### iOS Critical Information ⚠️
 
-### Workarounds:
-- Manual button works perfectly
-- Clear, friendly messaging
-- Only requires one tap
+**ALL iOS browsers (Chrome, Firefox, Edge) are actually Safari:**
+- Apple requires all iOS browsers to use Safari's WebKit engine
+- **PWAs can ONLY be installed via Safari on iOS** (not Chrome/Firefox/Edge)
+- This is an Apple platform restriction, not our app limitation
+
+### iOS Behavior by Default Browser:
+
+#### With Safari as Default ✅
+- Links open in Safari
+- Best deep linking experience
+- May still show button (iOS limitation)
+- One tap completes login
+
+#### With Chrome/Firefox/Edge as Default ⚠️
+- Links open in that browser
+- Browser detects it's not Safari
+- **Shows helpful tip:** "Install from Safari for best experience"
+- "Complete Sign In" button always works
+- One tap completes login
+
+### Our iOS Improvements ✨
+1. **Detects iOS browser type** (Chrome, Firefox, Edge, Safari)
+2. **Shows installation tips** on login page if using non-Safari browser
+3. **Shows contextual help** on auth redirect if needed
+4. **Always provides working fallback** button
 
 ### Android
-- Full support on Chrome/Edge
-- Excellent PWA support
-- Deep linking works great
+- ✅ Full support on ALL browsers (Chrome, Firefox, Edge, Samsung)
+- ✅ Excellent PWA support
+- ✅ Deep linking works great
+- ✅ No browser restrictions
 
 ## 🚀 What's Next
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { haptic, hapticSuccess, hapticError } from '@/lib/haptics';
 
@@ -8,7 +8,21 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [showIOSWarning, setShowIOSWarning] = useState(false);
   const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    // Detect if on iOS with non-Safari browser
+    const iOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
+      || (window.navigator as { standalone?: boolean }).standalone;
+    
+    if (iOS && !isStandalone) {
+      const ua = navigator.userAgent;
+      const isNonSafari = ua.includes('CriOS') || ua.includes('FxiOS') || ua.includes('EdgiOS');
+      setShowIOSWarning(isNonSafari);
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +66,21 @@ export default function LoginPage() {
             Fast expense tracking with EN/中文 support
           </p>
         </div>
+
+        {/* iOS Safari Recommendation */}
+        {showIOSWarning && (
+          <div className="mb-6 p-4 bg-ws-yellow-light border border-ws-yellow rounded-xl animate-fade-in-up">
+            <p className="text-sm text-ws-gray-900">
+              <span className="text-base">🍎</span> <strong>Hey iOS user!</strong>
+              <br />
+              <span className="text-xs">
+                For the best experience, install this app from <strong>Safari</strong>:
+                <br />
+                Open in Safari → Tap <strong>Share</strong> → <strong>Add to Home Screen</strong>
+              </span>
+            </p>
+          </div>
+        )}
 
         {/* Login Form */}
         <div
