@@ -29,6 +29,7 @@ export default function DashboardPage() {
   const [totalSpent, setTotalSpent] = useState(0);
   const [transactionCount, setTransactionCount] = useState(0);
   const [averagePerDay, setAveragePerDay] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   
   // Date range state
   const [startDate, setStartDate] = useState(() => {
@@ -168,7 +169,7 @@ export default function DashboardPage() {
               
               {categoryTotals.length > 0 ? (
                 <div className="space-y-6">
-                  {/* Simple Donut Chart */}
+                  {/* Interactive Donut Chart */}
                   <div className="relative w-64 h-64 mx-auto">
                     <svg viewBox="0 0 100 100" className="transform -rotate-90">
                       {categoryTotals.map((cat, index) => {
@@ -179,6 +180,7 @@ export default function DashboardPage() {
                         const circumference = 2 * Math.PI * 40;
                         const offset = (prevPercentages / 100) * circumference;
                         const dashLength = (percentage / 100) * circumference;
+                        const isSelected = selectedCategory === index;
 
                         return (
                           <circle
@@ -188,53 +190,101 @@ export default function DashboardPage() {
                             r="40"
                             fill="none"
                             stroke={getColorForCategory(index)}
-                            strokeWidth="12"
+                            strokeWidth={isSelected ? "14" : "12"}
                             strokeDasharray={`${dashLength} ${circumference - dashLength}`}
                             strokeDashoffset={-offset}
-                            className="transition-all duration-500"
+                            className="transition-all duration-300 cursor-pointer"
+                            style={{
+                              opacity: selectedCategory === null || isSelected ? 1 : 0.4,
+                              filter: isSelected ? 'drop-shadow(0 0 8px rgba(0,0,0,0.3))' : 'none',
+                            }}
+                            onClick={() => {
+                              haptic('light');
+                              setSelectedCategory(isSelected ? null : index);
+                            }}
+                            onMouseEnter={() => setSelectedCategory(index)}
+                            onMouseLeave={() => setSelectedCategory(null)}
                           />
                         );
                       })}
                       {/* Center hole */}
-                      <circle cx="50" cy="50" r="28" fill="white" className="transform rotate-90" />
+                      <circle cx="50" cy="50" r="28" fill="white" className="transform rotate-90 pointer-events-none" />
                     </svg>
-                    <div className="absolute inset-0 flex items-center justify-center flex-col">
-                      <p className="text-3xl font-bold text-ws-gray-900">
-                        {categoryTotals.length > 0 ? Math.round(categoryTotals[0].percentage) : 0}%
-                      </p>
-                      <p className="text-xs text-ws-gray-500 mt-1">
-                        {categoryTotals.length > 0 ? categoryTotals[0].category : 'Top'}
-                      </p>
+                    <div className="absolute inset-0 flex items-center justify-center flex-col pointer-events-none">
+                      {selectedCategory !== null && categoryTotals[selectedCategory] ? (
+                        <>
+                          <p className="text-3xl font-bold text-ws-gray-900 transition-all duration-300">
+                            {Math.round(categoryTotals[selectedCategory].percentage)}%
+                          </p>
+                          <p className="text-xs text-ws-gray-500 mt-1 text-center px-2">
+                            {categoryTotals[selectedCategory].icon} {categoryTotals[selectedCategory].category}
+                          </p>
+                          <p className="text-sm font-bold text-ws-gray-900 mt-1">
+                            {formatCurrency(categoryTotals[selectedCategory].total)}
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-3xl font-bold text-ws-gray-900">
+                            {categoryTotals.length > 0 ? Math.round(categoryTotals[0].percentage) : 0}%
+                          </p>
+                          <p className="text-xs text-ws-gray-500 mt-1">
+                            {categoryTotals.length > 0 ? categoryTotals[0].category : 'Top'}
+                          </p>
+                        </>
+                      )}
                     </div>
                   </div>
 
-                  {/* Legend */}
+                  {/* Interactive Legend */}
                   <div className="grid grid-cols-2 gap-3">
-                    {categoryTotals.map((cat, index) => (
-                      <div
-                        key={cat.category}
-                        className="flex items-center gap-3 p-3 rounded-xl hover:bg-ws-gray-50 transition-colors"
-                      >
+                    {categoryTotals.map((cat, index) => {
+                      const isSelected = selectedCategory === index;
+                      return (
                         <div
-                          className="w-4 h-4 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: getColorForCategory(index) }}
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-lg">{cat.icon}</span>
-                            <p className="text-sm font-semibold text-ws-gray-900 truncate">
-                              {cat.category}
+                          key={cat.category}
+                          onClick={() => {
+                            haptic('light');
+                            setSelectedCategory(isSelected ? null : index);
+                          }}
+                          onMouseEnter={() => setSelectedCategory(index)}
+                          onMouseLeave={() => setSelectedCategory(null)}
+                          className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-300 cursor-pointer ${
+                            isSelected
+                              ? 'bg-ws-coral-light shadow-md scale-105'
+                              : 'hover:bg-ws-gray-50'
+                          }`}
+                          style={{
+                            opacity: selectedCategory === null || isSelected ? 1 : 0.5,
+                          }}
+                        >
+                          <div
+                            className="w-4 h-4 rounded-full flex-shrink-0 transition-all duration-300"
+                            style={{
+                              backgroundColor: getColorForCategory(index),
+                              transform: isSelected ? 'scale(1.2)' : 'scale(1)',
+                              boxShadow: isSelected
+                                ? `0 0 12px ${getColorForCategory(index)}`
+                                : 'none',
+                            }}
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg">{cat.icon}</span>
+                              <p className="text-sm font-semibold text-ws-gray-900 truncate">
+                                {cat.category}
+                              </p>
+                            </div>
+                            <p className="text-xs text-ws-gray-500">
+                              {cat.transactionCount} transaction{cat.transactionCount !== 1 ? 's' : ''} · {cat.percentage.toFixed(1)}%
                             </p>
                           </div>
-                          <p className="text-xs text-ws-gray-500">
-                            {cat.transactionCount} transactions · {cat.percentage.toFixed(1)}%
+                          <p className="text-sm font-bold tabular-nums text-ws-gray-900">
+                            {formatCurrency(cat.total)}
                           </p>
                         </div>
-                        <p className="text-sm font-bold tabular-nums text-ws-gray-900">
-                          {formatCurrency(cat.total)}
-                        </p>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               ) : (
