@@ -493,50 +493,85 @@ export function parseReceipt(text: string): ReceiptData {
     }
   }
   
-  // CRITICAL FIX: Smart total extraction
-  // Look for "TOTAL", "BALANCE", "AMOUNT" keywords first
+  // CRITICAL FIX: Smart total extraction with multiple strategies
   let totalFound = false;
-  const totalKeywords = ['total', 'balance', 'amount', 'balance to pay', 'grand total', 'final total'];
   
+  // Strategy 1: Look for exact "TOTAL" line (not SUB TOTAL)
   for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].toLowerCase();
+    const line = lines[i];
+    const lowerLine = line.toLowerCase();
     
-    // Check if this line contains a total keyword
-    for (const keyword of totalKeywords) {
-      if (line.includes(keyword) && !line.includes('sub') && !line.includes('before')) {
-        // Extract amount from this line or next line
-        const combinedLine = line + ' ' + (lines[i + 1] || '');
-        const matches = combinedLine.match(amountPattern);
+    // Must contain "total" but NOT "sub" or "subtotal"
+    if ((lowerLine.includes('total') || lowerLine.includes('balance to pay') || 
+         lowerLine.includes('amount due') || lowerLine.includes('grand total')) &&
+        !lowerLine.includes('sub') && !lowerLine.includes('before tax') && 
+        !lowerLine.includes('item count')) {
+      
+      // Try to extract amount from this line and next 2 lines
+      const searchArea = [line, lines[i + 1] || '', lines[i + 2] || ''].join(' ');
+      const matches = searchArea.match(amountPattern);
+      
+      if (matches) {
+        // Find the last/largest reasonable amount in this area
+        const amounts = matches
+          .map(m => parseFloat(m.replace(/[$,\s]/g, '')))
+          .filter(n => !isNaN(n) && n > 0 && n < 10000);
         
-        if (matches) {
-          for (const match of matches) {
-            const cleanMatch = match.replace(/[$,\s]/g, '');
-            const num = parseFloat(cleanMatch);
-            
-            // Reasonable receipt amount: $0.01 to $9,999.99
-            if (!isNaN(num) && num > 0 && num < 10000) {
-              amount = num;
-              totalFound = true;
-              break;
-            }
-          }
+        if (amounts.length > 0) {
+          // Take the largest amount (final total is usually larger than sub-items)
+          amount = Math.max(...amounts);
+          totalFound = true;
+          break;
         }
-        if (totalFound) break;
       }
     }
-    if (totalFound) break;
   }
   
-  // Fallback: If no total keyword found, collect all amounts and take the last reasonable one
+  // Strategy 2: Look for "VISA", "AMOUNT:", "ACCT:" patterns (payment confirmation)
   if (!totalFound) {
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const lowerLine = line.toLowerCase();
+      
+      // Payment lines usually show final amount
+      if ((lowerLine.includes('visa') || lowerLine.includes('amount:') || 
+           lowerLine.includes('acct:') || lowerLine.includes('card')) &&
+          !lowerLine.includes('card number') && !lowerLine.includes('card #')) {
+        
+        const searchArea = [lines[i - 1] || '', line, lines[i + 1] || ''].join(' ');
+        const matches = searchArea.match(amountPattern);
+        
+        if (matches) {
+          const amounts = matches
+            .map(m => parseFloat(m.replace(/[$,\s]/g, '')))
+            .filter(n => !isNaN(n) && n > 0 && n < 10000);
+          
+          if (amounts.length > 0) {
+            amount = amounts[amounts.length - 1]; // Last amount near payment info
+            totalFound = true;
+            break;
+          }
+        }
+      }
+    }
+  }
+  
+  // Strategy 3: Last resort - find largest amount that appears multiple times
+  // (receipts often show total twice: once after items, once at payment)
+  if (!totalFound) {
+    const amountCounts = new Map<number, number>();
     const amounts: number[] = [];
+    
     for (const line of lines) {
-      // Skip lines with phone numbers, dates, transaction IDs
-      if (line.match(/\d{3}[-\s]?\d{3}[-\s]?\d{4}/) || // Phone: 905-305-7776
-          line.match(/\d{10,}/) || // Long numbers: transaction IDs
+      // Skip obvious non-total lines
+      if (line.match(/\d{3}[-\s]?\d{3}[-\s]?\d{4}/) || // Phone numbers
+          line.match(/\d{10,}/) || // Transaction IDs (10+ digits)
           line.toLowerCase().includes('lane') ||
-          line.toLowerCase().includes('trans') ||
-          line.toLowerCase().includes('terminal')) {
+          line.toLowerCase().includes('trans:') ||
+          line.toLowerCase().includes('terminal') ||
+          line.toLowerCase().includes('item count') ||
+          line.toLowerCase().includes('you saved') ||
+          line.match(/\d+:\d+/)) { // Times like 8:39:43
         continue;
       }
       
@@ -546,17 +581,26 @@ export function parseReceipt(text: string): ReceiptData {
           const cleanMatch = match.replace(/[$,\s]/g, '');
           const num = parseFloat(cleanMatch);
           
-          // Only accept reasonable amounts
+          // Only reasonable amounts
           if (!isNaN(num) && num > 0 && num < 10000) {
             amounts.push(num);
+            amountCounts.set(num, (amountCounts.get(num) || 0) + 1);
           }
         }
       }
     }
     
-    // Total is usually the last amount (after all items)
-    if (amounts.length > 0) {
-      amount = amounts[amounts.length - 1];
+    // Find amounts that appear 2+ times (likely the total)
+    const repeatedAmounts = Array.from(amountCounts.entries())
+      .filter(([_, count]) => count >= 2)
+      .map(([amt, _]) => amt)
+      .sort((a, b) => b - a); // Largest first
+    
+    if (repeatedAmounts.length > 0) {
+      amount = repeatedAmounts[0]; // Largest repeated amount
+    } else if (amounts.length > 0) {
+      // No repeated amounts, take the largest (totals are usually largest)
+      amount = Math.max(...amounts);
     }
   }
   
