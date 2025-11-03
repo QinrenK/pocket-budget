@@ -174,6 +174,7 @@ export default function DynamicIslandNav() {
             </button>
           </div>
         </div>
+        </div>
       </div>
     </div>
   );
