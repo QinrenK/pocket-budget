@@ -7,7 +7,9 @@ import { formatCurrency } from '@/lib/currency';
 import { haptic, hapticSuccess, hapticError } from '@/lib/haptics';
 import DynamicIslandNav from './components/DynamicIslandNav';
 import OfflineSyncIndicator from './components/OfflineSyncIndicator';
+import CameraCapture from './components/CameraCapture';
 import { offlineDB } from '@/lib/db';
+import { isCameraSupported, type ReceiptData } from '@/lib/ocr';
 
 interface Transaction {
   id: number;
@@ -36,6 +38,7 @@ export default function Home() {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [showCamera, setShowCamera] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Auto-focus input on mount
@@ -193,8 +196,52 @@ export default function Home() {
     setActiveRange(range);
   };
 
+  const handleCameraCapture = (text: string, receiptData?: ReceiptData) => {
+    hapticSuccess();
+    setInput(text);
+    setShowCamera(false);
+    
+    // Show success message with receipt details
+    if (receiptData?.vendor && receiptData?.amount) {
+      setToastMessage(
+        `Receipt scanned: ${receiptData.vendor} · ${formatCurrency(receiptData.amount)}`
+      );
+    } else {
+      setToastMessage('Text recognized! Review and submit.');
+    }
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+    
+    // Focus input for review
+    setTimeout(() => inputRef.current?.focus(), 100);
+  };
+
+  const openCamera = () => {
+    if (!isCameraSupported()) {
+      setToastMessage('Camera not supported on this device');
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      hapticError();
+      return;
+    }
+    haptic('medium');
+    setShowCamera(true);
+  };
+
   return (
-    <main className="min-h-screen bg-ws-gray-50 pt-24 page-transition">
+    <>
+      {/* Camera Capture Modal */}
+      {showCamera && (
+        <CameraCapture
+          onCapture={handleCameraCapture}
+          onClose={() => {
+            setShowCamera(false);
+            haptic('light');
+          }}
+        />
+      )}
+
+      <main className="min-h-screen bg-ws-gray-50 pt-24 page-transition">
       {/* Hero Section - Input Area */}
       <section className="bg-white px-4 sm:px-6 pt-safe pt-12 pb-8 border-b border-ws-gray-300">
         <div className="max-w-2xl mx-auto">
@@ -229,21 +276,20 @@ export default function Home() {
 
             <div className="flex gap-3">
               <button
+                type="button"
+                onClick={openCamera}
+                className="btn-secondary flex items-center justify-center gap-2 px-6"
+                disabled={isSubmitting}
+                title="Scan receipt with camera"
+              >
+                <span className="text-xl">📷</span>
+              </button>
+              <button
                 type="submit"
                 className="btn-primary flex-1"
                 disabled={isSubmitting || !input.trim()}
               >
                 {isSubmitting ? 'Adding...' : 'Add Expense'}
-              </button>
-              <button
-                type="button"
-                className="btn-secondary w-16 flex items-center justify-center"
-                onClick={() => {
-                  haptic('medium');
-                  alert('Receipt OCR coming soon!');
-                }}
-              >
-                📸
               </button>
             </div>
           </form>
@@ -351,11 +397,12 @@ export default function Home() {
         </div>
       )}
 
-      {/* Offline Sync Indicator */}
-      <OfflineSyncIndicator />
+        {/* Offline Sync Indicator */}
+        <OfflineSyncIndicator />
 
-      {/* Dynamic Island Navigation */}
-      <DynamicIslandNav />
-    </main>
+        {/* Dynamic Island Navigation */}
+        <DynamicIslandNav />
+      </main>
+    </>
   );
 }
