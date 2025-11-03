@@ -79,9 +79,11 @@ export default function DynamicIslandNav() {
             height: '56px',
             borderRadius: '9999px',
             overflow: 'hidden',
-            background: 'linear-gradient(to bottom, rgb(17, 24, 39), rgb(31, 41, 55))',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+            background: 'rgba(17, 24, 39, 0.95)',
+            backdropFilter: 'blur(20px)',
+            WebkitBackdropFilter: 'blur(20px)',
+            border: '1px solid rgba(255, 255, 255, 0.15)',
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
           }}
         >
 
