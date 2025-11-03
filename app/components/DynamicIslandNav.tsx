@@ -57,17 +57,20 @@ export default function DynamicIslandNav() {
 
   return (
     <nav 
-      className="fixed bottom-0 left-0 right-0" 
+      className="fixed left-0 right-0" 
       style={{ 
         zIndex: 9999,
-        paddingBottom: 'max(16px, env(safe-area-inset-bottom))'
+        bottom: 0,
+        paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
+        paddingLeft: '16px',
+        paddingRight: '16px',
       }}
     >
-      <div className="flex justify-center">
+      <div className="flex justify-center w-full">
         <div
           className="
             relative overflow-hidden
-            w-[540px] max-w-[calc(100vw-32px)] h-[56px] rounded-full
+            w-full max-w-[540px] h-[56px] rounded-full
             transition-all duration-300 ease-out
           "
         >
