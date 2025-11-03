@@ -113,7 +113,7 @@ export default function HistoryPage() {
   const totalAmount = filteredTransactions.reduce((sum, tx) => sum + tx.amount, 0);
 
   return (
-    <main className="min-h-screen bg-ws-gray-50 pb-24 page-transition">
+    <main className="min-h-screen bg-ws-gray-50 pt-24 page-transition">
       {/* Header */}
       <header className="bg-white px-6 pt-safe pt-6 pb-6 border-b border-ws-gray-300">
         <div className="max-w-4xl mx-auto">

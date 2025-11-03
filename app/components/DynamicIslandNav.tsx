@@ -61,11 +61,12 @@ export default function DynamicIslandNav() {
         position: 'fixed',
         left: 0,
         right: 0,
-        bottom: 0,
+        top: 0,
         zIndex: 9999,
-        paddingBottom: '16px',
+        paddingTop: 'max(16px, env(safe-area-inset-top))',
         paddingLeft: '16px',
         paddingRight: '16px',
+        paddingBottom: '16px',
         backgroundColor: 'transparent',
       }}
     >
