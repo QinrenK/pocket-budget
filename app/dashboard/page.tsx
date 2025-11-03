@@ -26,6 +26,7 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('month');
   const [totalSpent, setTotalSpent] = useState(0);
+  const [transactionCount, setTransactionCount] = useState(0);
 
   useEffect(() => {
     fetchDashboardData();
@@ -41,6 +42,7 @@ export default function DashboardPage() {
         setCategoryTotals(data.categoryTotals || []);
         setSpendingTrend(data.spendingTrend || []);
         setTotalSpent(data.totalSpent || 0);
+        setTransactionCount(data.transactionCount || 0);
       }
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
@@ -146,8 +148,12 @@ export default function DashboardPage() {
                       <circle cx="50" cy="50" r="28" fill="white" className="transform rotate-90" />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center flex-col">
-                      <p className="text-2xl font-bold">{categoryTotals.length}</p>
-                      <p className="text-xs text-ws-gray-500">Categories</p>
+                      <p className="text-3xl font-bold text-ws-gray-900">
+                        {categoryTotals.length > 0 ? Math.round(categoryTotals[0].percentage) : 0}%
+                      </p>
+                      <p className="text-xs text-ws-gray-500 mt-1">
+                        {categoryTotals.length > 0 ? categoryTotals[0].category : 'Top'}
+                      </p>
                     </div>
                   </div>
 
@@ -223,19 +229,20 @@ export default function DashboardPage() {
 
             {/* Quick Stats */}
             <section className="grid grid-cols-2 gap-4">
-              <div className="card">
+              <div className="card text-center">
                 <p className="text-sm text-ws-gray-500 mb-2">Average per Day</p>
                 <p className="text-2xl font-bold tabular-nums text-ws-gray-900">
-                  {formatCurrency(
-                    totalSpent /
-                      (timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : 365)
-                  )}
+                  {(() => {
+                    const days = timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : 365;
+                    const avgPerDay = days > 0 ? totalSpent / days : 0;
+                    return formatCurrency(avgPerDay);
+                  })()}
                 </p>
               </div>
-              <div className="card">
+              <div className="card text-center">
                 <p className="text-sm text-ws-gray-500 mb-2">Total Transactions</p>
                 <p className="text-2xl font-bold tabular-nums text-ws-gray-900">
-                  {categoryTotals.reduce((sum, cat) => sum + cat.transactionCount, 0)}
+                  {transactionCount}
                 </p>
               </div>
             </section>
