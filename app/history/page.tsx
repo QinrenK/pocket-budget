@@ -113,7 +113,7 @@ export default function HistoryPage() {
   const totalAmount = filteredTransactions.reduce((sum, tx) => sum + tx.amount, 0);
 
   return (
-    <main className="min-h-screen bg-ws-gray-50 pb-32">
+    <main className="min-h-screen bg-ws-gray-50 pb-32 page-transition">
       {/* Header */}
       <header className="bg-white px-6 pt-safe pt-6 pb-6 border-b border-ws-gray-300">
         <div className="max-w-4xl mx-auto">
@@ -141,12 +141,14 @@ export default function HistoryPage() {
 
           {/* Filters - Scrollable */}
           <div 
-            className="flex gap-3 overflow-x-scroll hide-scrollbar pb-2 -mx-6 px-6 cursor-grab active:cursor-grabbing"
+            className="flex gap-3 overflow-x-scroll pb-2 -mx-6 px-6 touch-pan-x"
             style={{ 
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
-              WebkitOverflowScrolling: 'touch'
+              WebkitOverflowScrolling: 'touch',
+              scrollBehavior: 'smooth'
             }}
+            onTouchStart={(e) => e.stopPropagation()}
           >
             {/* Date Range */}
             <button

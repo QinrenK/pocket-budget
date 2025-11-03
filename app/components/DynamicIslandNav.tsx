@@ -1,11 +1,59 @@
 'use client';
 
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { haptic } from '@/lib/haptics';
+import { useEffect, useRef } from 'react';
 
 export default function DynamicIslandNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const touchStartX = useRef<number>(0);
+  const touchEndX = useRef<number>(0);
+
+  const pages = ['/', '/history', '/settings'];
+  const currentIndex = pages.indexOf(pathname);
+
+  useEffect(() => {
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      touchEndX.current = e.touches[0].clientX;
+    };
+
+    const handleTouchEnd = () => {
+      const difference = touchStartX.current - touchEndX.current;
+      const threshold = 50;
+
+      if (Math.abs(difference) > threshold) {
+        if (difference > 0 && currentIndex < pages.length - 1) {
+          // Swipe left - go to next page
+          haptic('light');
+          router.push(pages[currentIndex + 1]);
+        } else if (difference < 0 && currentIndex > 0) {
+          // Swipe right - go to previous page
+          haptic('light');
+          router.push(pages[currentIndex - 1]);
+        }
+      }
+    };
+
+    document.addEventListener('touchstart', handleTouchStart);
+    document.addEventListener('touchmove', handleTouchMove);
+    document.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('touchmove', handleTouchMove);
+      document.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [currentIndex, router]);
+
+  const handleNavClick = (path: string) => {
+    haptic('light');
+    router.push(path);
+  };
 
   return (
     <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
@@ -27,75 +75,59 @@ export default function DynamicIslandNav() {
           "
         />
 
+        {/* Active indicator background - slides smoothly */}
+        <div
+          className="absolute inset-y-2 transition-all duration-300 ease-out"
+          style={{
+            left: currentIndex === 0 ? '8px' : currentIndex === 1 ? 'calc(33.33% + 4px)' : 'calc(66.66% + 0px)',
+            width: currentIndex === 0 ? 'calc(33.33% - 12px)' : currentIndex === 1 ? 'calc(33.33% - 8px)' : 'calc(33.33% - 12px)',
+          }}
+        >
+          <div className="w-full h-full bg-white/20 rounded-full" />
+        </div>
+
         {/* Content */}
         <div className="relative h-full flex items-center justify-center">
           {/* Horizontal Navigation Items */}
           <div className="w-full h-full px-6 flex items-center justify-around gap-4">
-            <Link
-              href="/"
-              onClick={() => haptic('light')}
-              className={`
-                flex items-center justify-center px-8 py-3 rounded-full
-                transition-all duration-200
-                ${
-                  pathname === '/'
-                    ? 'bg-white/20'
-                    : 'hover:bg-white/10 active:scale-95'
-                }
-              `}
+            <button
+              onClick={() => handleNavClick('/')}
+              className="flex items-center justify-center px-8 py-3 rounded-full transition-all duration-300 flex-1 active:scale-95"
             >
               <span
-                className={`text-[15px] font-medium tracking-tight ${
+                className={`text-[15px] font-medium tracking-tight transition-colors duration-300 ${
                   pathname === '/' ? 'text-white' : 'text-white/60'
                 }`}
               >
                 Home
               </span>
-            </Link>
+            </button>
 
-            <Link
-              href="/history"
-              onClick={() => haptic('light')}
-              className={`
-                flex items-center justify-center px-8 py-3 rounded-full
-                transition-all duration-200
-                ${
-                  pathname === '/history'
-                    ? 'bg-white/20'
-                    : 'hover:bg-white/10 active:scale-95'
-                }
-              `}
+            <button
+              onClick={() => handleNavClick('/history')}
+              className="flex items-center justify-center px-8 py-3 rounded-full transition-all duration-300 flex-1 active:scale-95"
             >
               <span
-                className={`text-[15px] font-medium tracking-tight ${
+                className={`text-[15px] font-medium tracking-tight transition-colors duration-300 ${
                   pathname === '/history' ? 'text-white' : 'text-white/60'
                 }`}
               >
                 History
               </span>
-            </Link>
+            </button>
 
-            <Link
-              href="/settings"
-              onClick={() => haptic('light')}
-              className={`
-                flex items-center justify-center px-8 py-3 rounded-full
-                transition-all duration-200
-                ${
-                  pathname === '/settings'
-                    ? 'bg-white/20'
-                    : 'hover:bg-white/10 active:scale-95'
-                }
-              `}
+            <button
+              onClick={() => handleNavClick('/settings')}
+              className="flex items-center justify-center px-8 py-3 rounded-full transition-all duration-300 flex-1 active:scale-95"
             >
               <span
-                className={`text-[15px] font-medium tracking-tight ${
+                className={`text-[15px] font-medium tracking-tight transition-colors duration-300 ${
                   pathname === '/settings' ? 'text-white' : 'text-white/60'
                 }`}
               >
                 Settings
               </span>
-            </Link>
+            </button>
           </div>
         </div>
       </div>
