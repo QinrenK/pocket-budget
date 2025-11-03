@@ -6,6 +6,8 @@ import { parseExpenseText } from '@/lib/parser';
 import { formatCurrency } from '@/lib/currency';
 import { haptic, hapticSuccess, hapticError } from '@/lib/haptics';
 import DynamicIslandNav from './components/DynamicIslandNav';
+import OfflineSyncIndicator from './components/OfflineSyncIndicator';
+import { offlineDB } from '@/lib/db';
 
 interface Transaction {
   id: number;
@@ -118,6 +120,23 @@ export default function Home() {
       if (!parseResult.success) {
         hapticError();
         setToastMessage(parseResult.error || 'Failed to parse input');
+        setShowToast(true);
+        setTimeout(() => setShowToast(false), 3000);
+        return;
+      }
+
+      // Check if online
+      if (!navigator.onLine) {
+        // Offline: Queue transaction
+        await offlineDB.addToQueue({
+          rawText: input,
+          source: 'text',
+        });
+
+        hapticSuccess();
+        setInput('');
+        setParsePreview('');
+        setToastMessage('Saved offline · Will sync when online');
         setShowToast(true);
         setTimeout(() => setShowToast(false), 3000);
         return;
@@ -331,6 +350,9 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Offline Sync Indicator */}
+      <OfflineSyncIndicator />
 
       {/* Dynamic Island Navigation */}
       <DynamicIslandNav />
