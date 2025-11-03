@@ -1,5 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
+import ServiceWorkerRegistration from './components/ServiceWorkerRegistration';
 
 export const metadata: Metadata = {
   title: 'Pocket Budget - Fast Expense Tracking',
@@ -25,7 +27,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: 'cover',
-  themeColor: '#FF5A5F',
+  themeColor: '#A78BFA',
 };
 
 export default function RootLayout({
@@ -42,6 +44,8 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen antialiased">
         {children}
+        <PWAInstallPrompt />
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );
