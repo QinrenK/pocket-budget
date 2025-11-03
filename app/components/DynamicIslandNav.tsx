@@ -72,7 +72,13 @@ export default function DynamicIslandNav() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[100]" style={{ paddingBottom: 'max(16px, env(safe-area-inset-bottom))' }}>
+    <nav 
+      className="fixed bottom-0 left-0 right-0" 
+      style={{ 
+        zIndex: 9999,
+        paddingBottom: 'max(16px, env(safe-area-inset-bottom))'
+      }}
+    >
       <div className="flex justify-center">
         <div
           className="
@@ -167,6 +173,6 @@ export default function DynamicIslandNav() {
         </div>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
