@@ -99,11 +99,11 @@ export async function GET(request: NextRequest) {
     let earliestDate: Date | null = null;
     let latestDate: Date | null = null;
 
-    transactions?.forEach((tx) => {
-      const categoryName =
-        tx.categories?.name || 'Uncategorized';
-      const icon = tx.categories?.icon || '❓';
-      const color = tx.categories?.color || '#8A8A8A';
+    transactions?.forEach((tx: any) => {
+      const category = Array.isArray(tx.categories) ? tx.categories[0] : tx.categories;
+      const categoryName = category?.name || 'Uncategorized';
+      const icon = category?.icon || '❓';
+      const color = category?.color || '#8A8A8A';
       const amount = tx.amount;
       const txDate = new Date(tx.ts);
 
