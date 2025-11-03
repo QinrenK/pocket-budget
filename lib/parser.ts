@@ -326,7 +326,14 @@ export function formatAmount(amount: number, currency: 'CAD' | 'USD' | 'CNY' = '
 /**
  * Test helper - run all PRD test cases
  */
-export function runTestCases(): { passed: number; failed: number; details: any[] } {
+interface TestResult {
+  input: string;
+  passed: boolean;
+  result: ParseResult;
+  expected: { total: number; items: number };
+}
+
+export function runTestCases(): { passed: number; failed: number; details: TestResult[] } {
   const testCases = [
     { input: '15 beef, 12.9 carrot', expectedTotal: 27.9, expectedItems: 2 },
     { input: '牛肉 15, 胡萝卜 12.9', expectedTotal: 27.9, expectedItems: 2 },

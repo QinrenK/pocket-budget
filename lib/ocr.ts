@@ -104,8 +104,8 @@ async function getWorker(
         message: 'Initializing OCR engine...',
       });
       
-      const worker = await createWorker({
-        logger: (m) => {
+      const worker = await createWorker(language, 1, {
+        logger: (m: { status: string; progress?: number }) => {
           // Convert Tesseract logs to our progress format
           if (m.status === 'loading tesseract core') {
             onProgress?.({
@@ -141,8 +141,6 @@ async function getWorker(
         },
       });
       
-      await worker.loadLanguage(language);
-      await worker.initialize(language);
       
       // Configure Tesseract parameters for better receipt recognition
       await worker.setParameters({
@@ -462,7 +460,7 @@ export function parseReceipt(text: string): ReceiptData {
   
   let vendor: string | undefined;
   let amount: number | undefined;
-  let currency = 'CAD';
+  const currency = 'CAD';
   let date: string | undefined;
   const items: string[] = [];
   
