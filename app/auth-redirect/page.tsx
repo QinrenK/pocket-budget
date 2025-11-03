@@ -61,11 +61,14 @@ export default function AuthRedirectPage() {
         }, 2000);
 
         // Try automatic redirect
-        setTimeout(() => {
+        const autoTimer = setTimeout(() => {
           window.location.href = pwaUrl;
         }, 500);
 
-        return () => clearTimeout(manualTimer);
+        return () => {
+          clearTimeout(manualTimer);
+          clearTimeout(autoTimer);
+        };
       } else {
         // No code, show options immediately
         setIsProcessing(false);
