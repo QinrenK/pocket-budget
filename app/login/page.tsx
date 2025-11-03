@@ -2,14 +2,12 @@
 
 import { useState } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { useRouter } from 'next/navigation';
 import { haptic, hapticSuccess, hapticError } from '@/lib/haptics';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const router = useRouter();
   const supabase = createClientComponentClient();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -21,10 +19,11 @@ export default function LoginPage() {
     setMessage('');
 
     try {
+      // Always use auth-redirect page which handles PWA detection
       const { error } = await supabase.auth.signInWithOtp({
         email,
         options: {
-          emailRedirectTo: `${window.location.origin}/api/auth/callback`,
+          emailRedirectTo: `${window.location.origin}/auth-redirect`,
         },
       });
 

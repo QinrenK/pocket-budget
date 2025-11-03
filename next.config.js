@@ -58,6 +58,19 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: '/.well-known/:path*',
+        headers: [
+          {
+            key: 'Content-Type',
+            value: 'application/json'
+          },
+          {
+            key: 'Access-Control-Allow-Origin',
+            value: '*'
+          },
+        ],
+      },
     ];
   },
 
