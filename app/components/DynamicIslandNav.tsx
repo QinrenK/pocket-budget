@@ -63,54 +63,88 @@ export default function DynamicIslandNav() {
         right: 0,
         bottom: 0,
         zIndex: 9999,
-        paddingBottom: 'max(16px, env(safe-area-inset-bottom))',
+        paddingBottom: '16px',
         paddingLeft: '16px',
         paddingRight: '16px',
-        pointerEvents: 'auto',
+        backgroundColor: 'transparent',
       }}
     >
-      <div className="flex justify-center w-full">
+      <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
         <div
-          className="
-            relative overflow-hidden
-            w-full max-w-[540px] h-[56px] rounded-full
-            transition-all duration-300 ease-out
-          "
+          style={{
+            position: 'relative',
+            width: '100%',
+            maxWidth: '540px',
+            height: '56px',
+            borderRadius: '9999px',
+            overflow: 'hidden',
+            background: 'linear-gradient(to bottom, rgb(17, 24, 39), rgb(31, 41, 55))',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+          }}
         >
-        {/* Glassmorphism background - solid and visible */}
-        <div
-          className="
-            absolute inset-0
-            bg-gradient-to-b from-gray-900 to-gray-800
-            backdrop-blur-xl
-            border border-white/20
-            shadow-2xl
-          "
-        />
 
         {/* Active indicator background - slides smoothly */}
         <div
-          className="absolute top-2 bottom-2 transition-all duration-300 ease-out"
           style={{
+            position: 'absolute',
+            top: '8px',
+            bottom: '8px',
             left: `calc(${currentIndex * 25}% + 8px)`,
             width: 'calc(25% - 16px)',
+            transition: 'all 300ms ease-out',
           }}
         >
-          <div className="w-full h-full bg-white/20 rounded-full" />
+          <div style={{ 
+            width: '100%', 
+            height: '100%', 
+            backgroundColor: 'rgba(255, 255, 255, 0.2)', 
+            borderRadius: '9999px' 
+          }} />
         </div>
 
         {/* Content */}
-        <div className="relative h-full flex items-center justify-center">
+        <div style={{ 
+          position: 'relative', 
+          height: '100%', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center' 
+        }}>
           {/* Horizontal Navigation Items */}
-          <div className="w-full h-full px-2 flex items-center justify-between gap-1">
+          <div style={{ 
+            width: '100%', 
+            height: '100%', 
+            paddingLeft: '8px',
+            paddingRight: '8px',
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between', 
+            gap: '4px' 
+          }}>
             <button
               onClick={() => handleNavClick('/')}
-              className="flex items-center justify-center py-3 rounded-full transition-all duration-300 flex-1 active:scale-95"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '12px 0',
+                borderRadius: '9999px',
+                flex: 1,
+                transition: 'all 300ms',
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+              }}
             >
               <span
-                className={`text-[15px] font-medium tracking-tight transition-colors duration-300 ${
-                  pathname === '/' ? 'text-white' : 'text-white/60'
-                }`}
+                style={{
+                  fontSize: '15px',
+                  fontWeight: 500,
+                  letterSpacing: '-0.015em',
+                  color: pathname === '/' ? 'white' : 'rgba(255, 255, 255, 0.6)',
+                  transition: 'color 300ms',
+                }}
               >
                 Home
               </span>
@@ -118,12 +152,27 @@ export default function DynamicIslandNav() {
 
             <button
               onClick={() => handleNavClick('/history')}
-              className="flex items-center justify-center py-3 rounded-full transition-all duration-300 flex-1 active:scale-95"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '12px 0',
+                borderRadius: '9999px',
+                flex: 1,
+                transition: 'all 300ms',
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+              }}
             >
               <span
-                className={`text-[15px] font-medium tracking-tight transition-colors duration-300 ${
-                  pathname === '/history' ? 'text-white' : 'text-white/60'
-                }`}
+                style={{
+                  fontSize: '15px',
+                  fontWeight: 500,
+                  letterSpacing: '-0.015em',
+                  color: pathname === '/history' ? 'white' : 'rgba(255, 255, 255, 0.6)',
+                  transition: 'color 300ms',
+                }}
               >
                 History
               </span>
@@ -131,12 +180,27 @@ export default function DynamicIslandNav() {
 
             <button
               onClick={() => handleNavClick('/dashboard')}
-              className="flex items-center justify-center py-3 rounded-full transition-all duration-300 flex-1 active:scale-95"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '12px 0',
+                borderRadius: '9999px',
+                flex: 1,
+                transition: 'all 300ms',
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+              }}
             >
               <span
-                className={`text-[14px] font-medium tracking-tight transition-colors duration-300 ${
-                  pathname === '/dashboard' ? 'text-white' : 'text-white/60'
-                }`}
+                style={{
+                  fontSize: '14px',
+                  fontWeight: 500,
+                  letterSpacing: '-0.015em',
+                  color: pathname === '/dashboard' ? 'white' : 'rgba(255, 255, 255, 0.6)',
+                  transition: 'color 300ms',
+                }}
               >
                 Dashboard
               </span>
@@ -144,12 +208,27 @@ export default function DynamicIslandNav() {
 
             <button
               onClick={() => handleNavClick('/settings')}
-              className="flex items-center justify-center py-3 rounded-full transition-all duration-300 flex-1 active:scale-95"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '12px 0',
+                borderRadius: '9999px',
+                flex: 1,
+                transition: 'all 300ms',
+                border: 'none',
+                background: 'transparent',
+                cursor: 'pointer',
+              }}
             >
               <span
-                className={`text-[15px] font-medium tracking-tight transition-colors duration-300 ${
-                  pathname === '/settings' ? 'text-white' : 'text-white/60'
-                }`}
+                style={{
+                  fontSize: '15px',
+                  fontWeight: 500,
+                  letterSpacing: '-0.015em',
+                  color: pathname === '/settings' ? 'white' : 'rgba(255, 255, 255, 0.6)',
+                  transition: 'color 300ms',
+                }}
               >
                 Settings
               </span>
