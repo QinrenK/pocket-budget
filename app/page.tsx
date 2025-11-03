@@ -91,7 +91,7 @@ export default function Home() {
   const fetchRecentTransactions = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/transactions/recent');
+      const response = await fetch('/api/transactions/recent?limit=20');
       if (!response.ok) {
         throw new Error('Failed to fetch transactions');
       }
@@ -302,6 +302,19 @@ export default function Home() {
                 </div>
               </Link>
             ))}
+
+            {/* See More Button - Only show if we have transactions */}
+            {transactions.length >= 20 && (
+              <div className="mt-6 text-center">
+                <Link
+                  href="/history"
+                  onClick={() => haptic('light')}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-ws-gray-900 text-white font-semibold hover:bg-ws-gray-700 transition-colors"
+                >
+                  See More History →
+                </Link>
+              </div>
+            )}
           </div>
         )}
       </section>

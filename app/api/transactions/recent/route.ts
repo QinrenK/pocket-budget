@@ -1,14 +1,14 @@
 /**
  * GET /api/transactions/recent
- * Fetch recent 10 transactions for display on home page
+ * Fetch recent transactions for display on home page (default 20, max 20)
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
 import type { Database } from '@/lib/supabase/types';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const supabase = createRouteHandlerClient<Database>({ cookies });
 
@@ -22,7 +22,12 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Fetch recent 10 transactions with category info
+    // Get limit from query params (default 20, max 20)
+    const { searchParams } = new URL(request.url);
+    const limitParam = searchParams.get('limit');
+    const limit = Math.min(parseInt(limitParam || '20', 10), 20);
+
+    // Fetch recent transactions with category info
     const { data: transactions, error: txError } = await supabase
       .from('transactions')
       .select(
@@ -44,7 +49,7 @@ export async function GET() {
       )
       .eq('user_id', user.id)
       .order('ts', { ascending: false })
-      .limit(10);
+      .limit(limit);
 
     if (txError) {
       console.error('Transaction fetch error:', txError);

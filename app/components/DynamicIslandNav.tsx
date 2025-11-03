@@ -10,7 +10,7 @@ export default function DynamicIslandNav() {
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
 
-  const pages = ['/', '/history', '/settings'];
+  const pages = ['/', '/history', '/dashboard', '/settings'];
   const currentIndex = pages.indexOf(pathname);
 
   useEffect(() => {
@@ -60,7 +60,7 @@ export default function DynamicIslandNav() {
       <div
         className="
           relative overflow-hidden
-          w-[400px] h-[56px] rounded-full
+          w-[480px] h-[56px] rounded-full
           transition-all duration-300 ease-out
         "
       >
@@ -79,8 +79,12 @@ export default function DynamicIslandNav() {
         <div
           className="absolute inset-y-2 transition-all duration-300 ease-out"
           style={{
-            left: currentIndex === 0 ? '8px' : currentIndex === 1 ? 'calc(33.33% + 4px)' : 'calc(66.66% + 0px)',
-            width: currentIndex === 0 ? 'calc(33.33% - 12px)' : currentIndex === 1 ? 'calc(33.33% - 8px)' : 'calc(33.33% - 12px)',
+            left: 
+              currentIndex === 0 ? '8px' : 
+              currentIndex === 1 ? 'calc(25% + 4px)' : 
+              currentIndex === 2 ? 'calc(50% + 0px)' : 
+              'calc(75% - 4px)',
+            width: 'calc(25% - 12px)',
           }}
         >
           <div className="w-full h-full bg-white/20 rounded-full" />
@@ -105,7 +109,7 @@ export default function DynamicIslandNav() {
 
             <button
               onClick={() => handleNavClick('/history')}
-              className="flex items-center justify-center px-8 py-3 rounded-full transition-all duration-300 flex-1 active:scale-95"
+              className="flex items-center justify-center px-6 py-3 rounded-full transition-all duration-300 flex-1 active:scale-95"
             >
               <span
                 className={`text-[15px] font-medium tracking-tight transition-colors duration-300 ${
@@ -117,8 +121,21 @@ export default function DynamicIslandNav() {
             </button>
 
             <button
+              onClick={() => handleNavClick('/dashboard')}
+              className="flex items-center justify-center px-6 py-3 rounded-full transition-all duration-300 flex-1 active:scale-95"
+            >
+              <span
+                className={`text-[15px] font-medium tracking-tight transition-colors duration-300 ${
+                  pathname === '/dashboard' ? 'text-white' : 'text-white/60'
+                }`}
+              >
+                Dashboard
+              </span>
+            </button>
+
+            <button
               onClick={() => handleNavClick('/settings')}
-              className="flex items-center justify-center px-8 py-3 rounded-full transition-all duration-300 flex-1 active:scale-95"
+              className="flex items-center justify-center px-6 py-3 rounded-full transition-all duration-300 flex-1 active:scale-95"
             >
               <span
                 className={`text-[15px] font-medium tracking-tight transition-colors duration-300 ${
