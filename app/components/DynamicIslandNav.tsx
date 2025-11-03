@@ -72,39 +72,29 @@ export default function DynamicIslandNav() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[100] pb-safe">
-      {/* Backdrop blur layer - covers full width */}
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100]">
       <div
-        className={`
-          absolute inset-0 -top-20 transition-all duration-300
-          ${isScrolled ? 'bg-black/10 backdrop-blur-md' : 'bg-transparent'}
-        `}
-      />
-      
-      {/* Navigation Island */}
-      <div className="relative flex justify-center py-4">
+        className="
+          relative overflow-hidden
+          w-[540px] max-w-[calc(100vw-32px)] h-[56px] rounded-full
+          transition-all duration-300 ease-out
+        "
+      >
+        {/* Glassmorphism background with adaptive transparency */}
         <div
-          className="
-            relative overflow-hidden
-            w-[540px] max-w-[calc(100vw-32px)] h-[56px] rounded-full
-            transition-all duration-300 ease-out
-          "
-        >
-          {/* Glassmorphism background */}
-          <div
-            className={`
-              absolute inset-0
-              transition-all duration-300
-              backdrop-blur-2xl
-              border border-white/10
-              shadow-2xl
-              ${
-                isScrolled
-                  ? 'bg-gradient-to-b from-ws-gray-900/98 to-ws-gray-900/95'
-                  : 'bg-gradient-to-b from-ws-gray-900/95 to-ws-gray-900/90'
-              }
-            `}
-          />
+          className={`
+            absolute inset-0
+            transition-all duration-300
+            backdrop-blur-2xl
+            border border-white/10
+            shadow-2xl
+            ${
+              isScrolled
+                ? 'bg-gradient-to-b from-ws-gray-900/98 to-ws-gray-900/95'
+                : 'bg-gradient-to-b from-ws-gray-900/95 to-ws-gray-900/90'
+            }
+          `}
+        />
 
         {/* Active indicator background - slides smoothly */}
         <div
@@ -173,7 +163,6 @@ export default function DynamicIslandNav() {
               </span>
             </button>
           </div>
-        </div>
         </div>
       </div>
     </div>
