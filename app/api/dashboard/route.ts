@@ -82,6 +82,8 @@ export async function GET(request: NextRequest) {
     >();
 
     let totalSpent = 0;
+    let earliestDate: Date | null = null;
+    let latestDate: Date | null = null;
 
     transactions?.forEach((tx) => {
       const categoryName =
@@ -89,8 +91,17 @@ export async function GET(request: NextRequest) {
       const icon = tx.categories?.icon || '❓';
       const color = tx.categories?.color || '#8A8A8A';
       const amount = tx.amount;
+      const txDate = new Date(tx.ts);
 
       totalSpent += amount;
+
+      // Track date range
+      if (!earliestDate || txDate < earliestDate) {
+        earliestDate = txDate;
+      }
+      if (!latestDate || txDate > latestDate) {
+        latestDate = txDate;
+      }
 
       if (categoryMap.has(categoryName)) {
         const existing = categoryMap.get(categoryName)!;
@@ -115,6 +126,13 @@ export async function GET(request: NextRequest) {
         percentage: totalSpent > 0 ? (cat.total / totalSpent) * 100 : 0,
       }));
 
+    // Calculate actual days with transactions
+    let actualDays = 1; // Default to 1 to avoid division by zero
+    if (earliestDate && latestDate) {
+      const diffTime = Math.abs(latestDate.getTime() - earliestDate.getTime());
+      actualDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 to include both start and end day
+    }
+
     // Generate spending trend (simplified for now)
     const spendingTrend = [
       { period: 'Week 1', amount: 0 },
@@ -128,6 +146,8 @@ export async function GET(request: NextRequest) {
       spendingTrend,
       totalSpent,
       transactionCount: transactions?.length || 0,
+      actualDays,
+      averagePerDay: actualDays > 0 ? totalSpent / actualDays : 0,
     });
   } catch (error) {
     console.error('Dashboard API error:', error);

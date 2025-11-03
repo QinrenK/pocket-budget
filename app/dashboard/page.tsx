@@ -27,6 +27,7 @@ export default function DashboardPage() {
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('month');
   const [totalSpent, setTotalSpent] = useState(0);
   const [transactionCount, setTransactionCount] = useState(0);
+  const [averagePerDay, setAveragePerDay] = useState(0);
 
   useEffect(() => {
     fetchDashboardData();
@@ -43,6 +44,7 @@ export default function DashboardPage() {
         setSpendingTrend(data.spendingTrend || []);
         setTotalSpent(data.totalSpent || 0);
         setTransactionCount(data.transactionCount || 0);
+        setAveragePerDay(data.averagePerDay || 0);
       }
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
@@ -232,11 +234,7 @@ export default function DashboardPage() {
               <div className="card text-center">
                 <p className="text-sm text-ws-gray-500 mb-2">Average per Day</p>
                 <p className="text-2xl font-bold tabular-nums text-ws-gray-900">
-                  {(() => {
-                    const days = timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : 365;
-                    const avgPerDay = days > 0 ? totalSpent / days : 0;
-                    return formatCurrency(avgPerDay);
-                  })()}
+                  {formatCurrency(averagePerDay)}
                 </p>
               </div>
               <div className="card text-center">
