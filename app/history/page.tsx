@@ -139,8 +139,15 @@ export default function HistoryPage() {
             className="input-field mb-4"
           />
 
-          {/* Filters */}
-          <div className="flex gap-3 overflow-x-auto hide-scrollbar pb-2 -mx-6 px-6">
+          {/* Filters - Scrollable */}
+          <div 
+            className="flex gap-3 overflow-x-scroll hide-scrollbar pb-2 -mx-6 px-6 cursor-grab active:cursor-grabbing"
+            style={{ 
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none',
+              WebkitOverflowScrolling: 'touch'
+            }}
+          >
             {/* Date Range */}
             <button
               onClick={() => {
@@ -181,7 +188,7 @@ export default function HistoryPage() {
             >
               All Categories
             </button>
-            {categories.slice(0, 5).map((cat) => (
+            {categories.map((cat) => (
               <button
                 key={cat.id}
                 onClick={() => {
