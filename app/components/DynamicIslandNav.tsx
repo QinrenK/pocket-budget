@@ -9,7 +9,6 @@ export default function DynamicIslandNav() {
   const router = useRouter();
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
-  const [isScrolled, setIsScrolled] = useState(false);
 
   const pages = ['/', '/history', '/dashboard', '/settings'];
   const currentIndex = pages.indexOf(pathname);
@@ -51,21 +50,6 @@ export default function DynamicIslandNav() {
     };
   }, [currentIndex, router]);
 
-  // Detect scroll to adjust nav bar transparency
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollThreshold = 50;
-      setIsScrolled(window.scrollY > scrollThreshold);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    handleScroll(); // Check initial state
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
-
   const handleNavClick = (path: string) => {
     haptic('light');
     router.push(path);
@@ -87,20 +71,15 @@ export default function DynamicIslandNav() {
             transition-all duration-300 ease-out
           "
         >
-        {/* Glassmorphism background with adaptive transparency */}
+        {/* Glassmorphism background - solid and visible */}
         <div
-          className={`
+          className="
             absolute inset-0
-            transition-all duration-300
-            backdrop-blur-2xl
-            border border-white/10
+            bg-gradient-to-b from-gray-900 to-gray-800
+            backdrop-blur-xl
+            border border-white/20
             shadow-2xl
-            ${
-              isScrolled
-                ? 'bg-gradient-to-b from-ws-gray-900/98 to-ws-gray-900/95'
-                : 'bg-gradient-to-b from-ws-gray-900/95 to-ws-gray-900/90'
-            }
-          `}
+          "
         />
 
         {/* Active indicator background - slides smoothly */}
