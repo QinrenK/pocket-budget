@@ -23,23 +23,37 @@ export async function GET(request: NextRequest) {
     const userId = session.user.id;
     const { searchParams } = new URL(request.url);
     const range = searchParams.get('range') || 'month';
+    const customStartDate = searchParams.get('startDate');
+    const customEndDate = searchParams.get('endDate');
 
     // Calculate date range
     const now = new Date();
-    let startDate = new Date();
+    let startDate: Date;
+    let endDate: Date;
 
-    switch (range) {
-      case 'week':
-        startDate.setDate(now.getDate() - 7);
-        break;
-      case 'month':
-        startDate.setDate(now.getDate() - 30);
-        break;
-      case 'year':
-        startDate.setFullYear(now.getFullYear() - 1);
-        break;
-      default:
-        startDate.setDate(now.getDate() - 30);
+    if (customStartDate && customEndDate) {
+      // Use custom date range
+      startDate = new Date(customStartDate);
+      endDate = new Date(customEndDate);
+      endDate.setHours(23, 59, 59, 999); // End of day
+    } else {
+      // Use preset range
+      endDate = new Date();
+      startDate = new Date();
+
+      switch (range) {
+        case 'week':
+          startDate.setDate(now.getDate() - 7);
+          break;
+        case 'month':
+          startDate.setDate(now.getDate() - 30);
+          break;
+        case 'year':
+          startDate.setFullYear(now.getFullYear() - 1);
+          break;
+        default:
+          startDate.setDate(now.getDate() - 30);
+      }
     }
 
     // Fetch transactions with categories
@@ -61,7 +75,7 @@ export async function GET(request: NextRequest) {
       )
       .eq('user_id', userId)
       .gte('ts', startDate.toISOString())
-      .lte('ts', now.toISOString())
+      .lte('ts', endDate.toISOString())
       .order('ts', { ascending: false });
 
     if (txError) {

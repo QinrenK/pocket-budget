@@ -5,6 +5,7 @@ import { formatCurrency } from '@/lib/currency';
 import { haptic } from '@/lib/haptics';
 import Link from 'next/link';
 import DynamicIslandNav from '../components/DynamicIslandNav';
+import DateRangePicker from '../components/DateRangePicker';
 
 interface Transaction {
   id: number;
@@ -32,12 +33,22 @@ export default function HistoryPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [filterCategory, setFilterCategory] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [dateRange, setDateRange] = useState<'week' | 'month' | 'all'>('month');
+  const [dateRange, setDateRange] = useState<'week' | 'month' | 'all' | 'custom'>('month');
+  
+  // Custom date range
+  const [startDate, setStartDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+    return date.toISOString().split('T')[0];
+  });
+  const [endDate, setEndDate] = useState(() => {
+    return new Date().toISOString().split('T')[0];
+  });
 
   useEffect(() => {
     fetchCategories();
     fetchTransactions();
-  }, [dateRange, filterCategory]);
+  }, [dateRange, filterCategory, startDate, endDate]);
 
   const fetchCategories = async () => {
     try {
@@ -57,7 +68,10 @@ export default function HistoryPage() {
       let url = '/api/transactions';
       const params = new URLSearchParams();
       
-      if (dateRange !== 'all') {
+      if (dateRange === 'custom') {
+        params.append('startDate', startDate);
+        params.append('endDate', endDate);
+      } else if (dateRange !== 'all') {
         params.append('range', dateRange);
       }
       if (filterCategory) {
@@ -78,6 +92,12 @@ export default function HistoryPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDateRangeChange = (newStartDate: string, newEndDate: string) => {
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
+    setDateRange('custom');
   };
 
   const handleDelete = async (id: number) => {
@@ -130,14 +150,21 @@ export default function HistoryPage() {
             </div>
           </div>
 
-          {/* Search */}
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search transactions..."
-            className="input-field mb-4"
-          />
+          {/* Search and Date Range */}
+          <div className="flex gap-3 mb-4 flex-wrap items-center">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search transactions..."
+              className="input-field flex-1 min-w-[200px] mb-0"
+            />
+            <DateRangePicker
+              startDate={startDate}
+              endDate={endDate}
+              onDateChange={handleDateRangeChange}
+            />
+          </div>
 
           {/* Filters - Scrollable */}
           <div 

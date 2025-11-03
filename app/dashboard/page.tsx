@@ -5,6 +5,7 @@ import { formatCurrency } from '@/lib/currency';
 import { haptic } from '@/lib/haptics';
 import Link from 'next/link';
 import DynamicIslandNav from '../components/DynamicIslandNav';
+import DateRangePicker from '../components/DateRangePicker';
 
 interface CategoryTotal {
   category: string;
@@ -24,20 +25,35 @@ export default function DashboardPage() {
   const [categoryTotals, setCategoryTotals] = useState<CategoryTotal[]>([]);
   const [spendingTrend, setSpendingTrend] = useState<SpendingTrend[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year'>('month');
+  const [timeRange, setTimeRange] = useState<'week' | 'month' | 'year' | 'custom'>('month');
   const [totalSpent, setTotalSpent] = useState(0);
   const [transactionCount, setTransactionCount] = useState(0);
   const [averagePerDay, setAveragePerDay] = useState(0);
+  
+  // Date range state
+  const [startDate, setStartDate] = useState(() => {
+    const date = new Date();
+    date.setDate(date.getDate() - 30);
+    return date.toISOString().split('T')[0];
+  });
+  const [endDate, setEndDate] = useState(() => {
+    return new Date().toISOString().split('T')[0];
+  });
 
   useEffect(() => {
     fetchDashboardData();
-  }, [timeRange]);
+  }, [timeRange, startDate, endDate]);
 
   const fetchDashboardData = async () => {
     setIsLoading(true);
     try {
-      // Fetch category totals
-      const response = await fetch(`/api/dashboard?range=${timeRange}`);
+      // Build query string
+      let url = `/api/dashboard?range=${timeRange}`;
+      if (timeRange === 'custom') {
+        url += `&startDate=${startDate}&endDate=${endDate}`;
+      }
+      
+      const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();
         setCategoryTotals(data.categoryTotals || []);
@@ -51,6 +67,12 @@ export default function DashboardPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleDateRangeChange = (newStartDate: string, newEndDate: string) => {
+    setStartDate(newStartDate);
+    setEndDate(newEndDate);
+    setTimeRange('custom');
   };
 
   const getColorForCategory = (index: number) => {
@@ -88,19 +110,46 @@ export default function DashboardPage() {
           </div>
 
           {/* Time Range Selector */}
-          <div className="flex gap-3">
-            {(['week', 'month', 'year'] as const).map((range) => (
-              <button
-                key={range}
-                onClick={() => {
-                  haptic('light');
-                  setTimeRange(range);
-                }}
-                className={`chip ${timeRange === range ? 'chip-active' : 'chip-inactive'}`}
-              >
-                {range.charAt(0).toUpperCase() + range.slice(1)}
-              </button>
-            ))}
+          <div className="flex items-center gap-3 flex-wrap">
+            <div className="flex gap-3">
+              {(['week', 'month', 'year'] as const).map((range) => (
+                <button
+                  key={range}
+                  onClick={() => {
+                    haptic('light');
+                    setTimeRange(range);
+                    // Reset to default date range for preset options
+                    if (range === 'week') {
+                      const end = new Date();
+                      const start = new Date();
+                      start.setDate(end.getDate() - 7);
+                      setStartDate(start.toISOString().split('T')[0]);
+                      setEndDate(end.toISOString().split('T')[0]);
+                    } else if (range === 'month') {
+                      const end = new Date();
+                      const start = new Date();
+                      start.setDate(end.getDate() - 30);
+                      setStartDate(start.toISOString().split('T')[0]);
+                      setEndDate(end.toISOString().split('T')[0]);
+                    } else if (range === 'year') {
+                      const end = new Date();
+                      const start = new Date();
+                      start.setFullYear(end.getFullYear() - 1);
+                      setStartDate(start.toISOString().split('T')[0]);
+                      setEndDate(end.toISOString().split('T')[0]);
+                    }
+                  }}
+                  className={`chip ${timeRange === range ? 'chip-active' : 'chip-inactive'}`}
+                >
+                  {range.charAt(0).toUpperCase() + range.slice(1)}
+                </button>
+              ))}
+            </div>
+            <DateRangePicker
+              startDate={startDate}
+              endDate={endDate}
+              onDateChange={handleDateRangeChange}
+            />
           </div>
         </div>
       </header>

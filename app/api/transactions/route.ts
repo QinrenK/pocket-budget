@@ -46,9 +46,21 @@ export async function GET(request: NextRequest) {
       .eq('user_id', user.id)
       .order('ts', { ascending: false });
 
-    // Apply filters
+    // Apply date filters
+    const customStartDate = searchParams.get('startDate');
+    const customEndDate = searchParams.get('endDate');
     const range = searchParams.get('range');
-    if (range && range !== 'all') {
+
+    if (customStartDate && customEndDate) {
+      // Use custom date range
+      const start = new Date(customStartDate);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(customEndDate);
+      end.setHours(23, 59, 59, 999);
+      
+      query = query.gte('ts', start.toISOString()).lte('ts', end.toISOString());
+    } else if (range && range !== 'all') {
+      // Use preset range
       const now = new Date();
       const start = new Date();
 
