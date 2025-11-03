@@ -5,6 +5,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { useRouter } from 'next/navigation';
 import { haptic, hapticSuccess } from '@/lib/haptics';
 import Link from 'next/link';
+import DynamicIslandNav from '../components/DynamicIslandNav';
 
 export default function SettingsPage() {
   const [user, setUser] = useState<any>(null);
@@ -129,7 +130,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <main className="min-h-screen bg-ws-gray-50 pb-24">
+    <main className="min-h-screen bg-ws-gray-50 pb-32">
       {/* Header */}
       <header className="bg-white px-6 pt-safe pt-6 pb-6 border-b border-ws-gray-300">
         <div className="max-w-2xl mx-auto">
@@ -215,35 +216,8 @@ export default function SettingsPage() {
         </section>
       </div>
 
-      {/* Bottom Navigation Bar - Mobbin Style with Glassmorphism */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-ws-gray-300/20 backdrop-blur-xl bg-white/80 supports-[backdrop-filter]:bg-white/60 pb-safe">
-        <div className="max-w-2xl mx-auto px-6 py-3 flex items-center justify-around">
-          <Link
-            href="/"
-            className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all hover:bg-ws-gray-100/50 active:scale-95"
-            onClick={() => haptic('light')}
-          >
-            <span className="text-2xl">🏠</span>
-            <span className="text-[11px] font-medium text-ws-gray-600">PB</span>
-          </Link>
-          <Link
-            href="/history"
-            className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all hover:bg-ws-gray-100/50 active:scale-95"
-            onClick={() => haptic('light')}
-          >
-            <span className="text-2xl">📊</span>
-            <span className="text-[11px] font-medium text-ws-gray-600">History</span>
-          </Link>
-          <Link
-            href="/settings"
-            className="flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all hover:bg-ws-gray-100/50 active:scale-95"
-            onClick={() => haptic('light')}
-          >
-            <span className="text-2xl">⚙️</span>
-            <span className="text-[11px] font-semibold text-ws-gray-900">Settings</span>
-          </Link>
-        </div>
-      </nav>
+      {/* Dynamic Island Navigation */}
+      <DynamicIslandNav />
     </main>
   );
 }
