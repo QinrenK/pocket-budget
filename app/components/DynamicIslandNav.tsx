@@ -72,14 +72,16 @@ export default function DynamicIslandNav() {
   };
 
   return (
-    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[100]">
-      <div
-        className="
-          relative overflow-hidden
-          w-[540px] max-w-[calc(100vw-32px)] h-[56px] rounded-full
-          transition-all duration-300 ease-out
-        "
-      >
+    <div className="fixed bottom-0 left-0 right-0 z-[100] pointer-events-none">
+      <div className="flex justify-center pb-4 pb-safe">
+        <div
+          className="
+            relative overflow-hidden
+            w-[540px] max-w-[calc(100vw-32px)] h-[56px] rounded-full
+            transition-all duration-300 ease-out
+            pointer-events-auto
+          "
+        >
         {/* Glassmorphism background with adaptive transparency */}
         <div
           className={`
@@ -163,6 +165,7 @@ export default function DynamicIslandNav() {
               </span>
             </button>
           </div>
+        </div>
         </div>
       </div>
     </div>
