@@ -132,16 +132,16 @@ export default function SettingsPage() {
   return (
     <main className="min-h-screen bg-ws-gray-50 pt-24 page-transition">
       {/* Header */}
-      <header className="bg-white px-6 pt-safe pt-6 pb-6 border-b border-ws-gray-300">
+      <header className="bg-white px-4 sm:px-6 pt-safe pt-6 pb-6 border-b border-ws-gray-300">
         <div className="max-w-2xl mx-auto">
           <Link href="/" className="text-ws-coral hover:text-ws-coral-dark text-sm font-medium">
             ← Back
           </Link>
-          <h1 className="text-h1 mt-2">Settings</h1>
+          <h1 className="text-2xl sm:text-h1 mt-2 font-bold">Settings</h1>
         </div>
       </header>
 
-      <div className="max-w-2xl mx-auto px-6 py-8 space-y-6">
+      <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-6">
         {/* Profile */}
         <section className="card">
           <h2 className="text-h3 mb-4">Profile</h2>

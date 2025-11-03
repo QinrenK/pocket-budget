@@ -135,23 +135,23 @@ export default function HistoryPage() {
   return (
     <main className="min-h-screen bg-ws-gray-50 pt-24 page-transition">
       {/* Header */}
-      <header className="bg-white px-6 pt-safe pt-6 pb-6 border-b border-ws-gray-300">
+      <header className="bg-white px-4 sm:px-6 pt-safe pt-6 pb-6 border-b border-ws-gray-300">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <div>
+          <div className="flex items-center justify-between gap-4 mb-6">
+            <div className="flex-shrink-0">
               <Link href="/" className="text-ws-coral hover:text-ws-coral-dark text-sm font-medium">
                 ← Back
               </Link>
-              <h1 className="text-h1 mt-2">History</h1>
+              <h1 className="text-2xl sm:text-h1 mt-2 font-bold">History</h1>
             </div>
-            <div className="text-right">
-              <p className="text-sm text-ws-gray-500">Total</p>
-              <p className="text-display text-ws-gray-900">{formatCurrency(totalAmount)}</p>
+            <div className="text-right flex-shrink-0">
+              <p className="text-xs sm:text-sm text-ws-gray-500 whitespace-nowrap">Total</p>
+              <p className="text-3xl sm:text-display font-bold text-ws-gray-900 tabular-nums">{formatCurrency(totalAmount)}</p>
             </div>
           </div>
 
           {/* Search and Date Range */}
-          <div className="flex gap-3 mb-4 flex-wrap items-center">
+          <div className="flex gap-3 mb-4 flex-wrap items-center" onTouchStart={(e) => e.stopPropagation()}>
             <input
               type="text"
               value={searchQuery}
@@ -168,13 +168,7 @@ export default function HistoryPage() {
 
           {/* Filters - Scrollable */}
           <div 
-            className="flex gap-3 overflow-x-scroll pb-2 -mx-6 px-6 touch-pan-x"
-            style={{ 
-              scrollbarWidth: 'none',
-              msOverflowStyle: 'none',
-              WebkitOverflowScrolling: 'touch',
-              scrollBehavior: 'smooth'
-            }}
+            className="flex gap-3 overflow-x-scroll pb-2 -mx-4 sm:-mx-6 px-4 sm:px-6 touch-pan-x hide-scrollbar"
             onTouchStart={(e) => e.stopPropagation()}
           >
             {/* Date Range */}
@@ -234,7 +228,7 @@ export default function HistoryPage() {
       </header>
 
       {/* Transactions List */}
-      <section className="px-6 py-8 max-w-4xl mx-auto">
+      <section className="px-4 sm:px-6 py-8 max-w-4xl mx-auto">
         {isLoading ? (
           <div className="space-y-3">
             {[1, 2, 3, 4, 5].map((i) => (
