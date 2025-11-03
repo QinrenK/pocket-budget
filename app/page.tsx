@@ -196,7 +196,7 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-ws-gray-50 pt-24 page-transition">
       {/* Hero Section - Input Area */}
-      <section className="bg-white px-6 pt-safe pt-12 pb-8 border-b border-ws-gray-300">
+      <section className="bg-white px-4 sm:px-6 pt-safe pt-12 pb-8 border-b border-ws-gray-300">
         <div className="max-w-2xl mx-auto">
           {/* Logo/Title */}
           <div className="mb-8">
@@ -249,12 +249,12 @@ export default function Home() {
           </form>
 
           {/* Period Chips */}
-          <div className="flex gap-3 mt-8 overflow-x-auto hide-scrollbar">
+          <div className="flex gap-3 mt-8 overflow-x-auto hide-scrollbar -mx-4 sm:-mx-6 px-4 sm:px-6 touch-pan-x" onTouchStart={(e) => e.stopPropagation()}>
             {(['today', 'week', 'month'] as const).map((range) => (
               <button
                 key={range}
                 onClick={() => handleRangeChange(range)}
-                className={`chip ${activeRange === range ? 'chip-active' : 'chip-inactive'}`}
+                className={`chip whitespace-nowrap flex-shrink-0 ${activeRange === range ? 'chip-active' : 'chip-inactive'}`}
               >
                 {range.charAt(0).toUpperCase() + range.slice(1)} ·{' '}
                 {formatCurrency(rollups[range]?.total || 0)}
@@ -266,7 +266,7 @@ export default function Home() {
       </section>
 
       {/* Recent Transactions */}
-      <section className="px-6 py-8 max-w-2xl mx-auto">
+      <section className="px-4 sm:px-6 py-8 max-w-2xl mx-auto">
         <h2 className="text-h2 mb-4">Recent</h2>
 
         {isLoading ? (

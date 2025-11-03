@@ -101,57 +101,58 @@ export default function DashboardPage() {
   return (
     <main className="min-h-screen bg-ws-gray-50 pt-24 page-transition">
       {/* Header */}
-      <header className="bg-white px-6 pt-safe pt-6 pb-6 border-b border-ws-gray-300">
+      <header className="bg-white px-4 sm:px-6 pt-safe pt-6 pb-6 border-b border-ws-gray-300">
         <div className="max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <div>
+          <div className="flex items-center justify-between gap-4 mb-6">
+            <div className="flex-shrink-0">
               <Link href="/" className="text-ws-coral hover:text-ws-coral-dark text-sm font-medium">
                 ← Back
               </Link>
-              <h1 className="text-h1 mt-2">Dashboard</h1>
+              <h1 className="text-2xl sm:text-h1 mt-2 font-bold">Dashboard</h1>
             </div>
-            <div className="text-right">
-              <p className="text-sm text-ws-gray-500">Total Spent</p>
-              <p className="text-display text-ws-gray-900">{formatCurrency(totalSpent)}</p>
+            <div className="text-right flex-shrink-0">
+              <p className="text-xs sm:text-sm text-ws-gray-500 whitespace-nowrap">Total Spent</p>
+              <p className="text-3xl sm:text-display font-bold text-ws-gray-900 tabular-nums">{formatCurrency(totalSpent)}</p>
             </div>
           </div>
 
           {/* Time Range Selector */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex gap-3">
-              {(['week', 'month', 'year'] as const).map((range) => (
-                <button
-                  key={range}
-                  onClick={() => {
-                    haptic('light');
-                    setTimeRange(range);
-                    // Reset to default date range for preset options
-                    if (range === 'week') {
-                      const end = new Date();
-                      const start = new Date();
-                      start.setDate(end.getDate() - 7);
-                      setStartDate(start.toISOString().split('T')[0]);
-                      setEndDate(end.toISOString().split('T')[0]);
-                    } else if (range === 'month') {
-                      const end = new Date();
-                      const start = new Date();
-                      start.setDate(end.getDate() - 30);
-                      setStartDate(start.toISOString().split('T')[0]);
-                      setEndDate(end.toISOString().split('T')[0]);
-                    } else if (range === 'year') {
-                      const end = new Date();
-                      const start = new Date();
-                      start.setFullYear(end.getFullYear() - 1);
-                      setStartDate(start.toISOString().split('T')[0]);
-                      setEndDate(end.toISOString().split('T')[0]);
-                    }
-                  }}
-                  className={`chip ${timeRange === range ? 'chip-active' : 'chip-inactive'}`}
-                >
-                  {range.charAt(0).toUpperCase() + range.slice(1)}
-                </button>
-              ))}
-            </div>
+          <div 
+            className="flex items-center gap-3 overflow-x-auto pb-2 -mx-4 sm:-mx-6 px-4 sm:px-6 touch-pan-x hide-scrollbar"
+            onTouchStart={(e) => e.stopPropagation()}
+          >
+            {(['week', 'month', 'year'] as const).map((range) => (
+              <button
+                key={range}
+                onClick={() => {
+                  haptic('light');
+                  setTimeRange(range);
+                  // Reset to default date range for preset options
+                  if (range === 'week') {
+                    const end = new Date();
+                    const start = new Date();
+                    start.setDate(end.getDate() - 7);
+                    setStartDate(start.toISOString().split('T')[0]);
+                    setEndDate(end.toISOString().split('T')[0]);
+                  } else if (range === 'month') {
+                    const end = new Date();
+                    const start = new Date();
+                    start.setDate(end.getDate() - 30);
+                    setStartDate(start.toISOString().split('T')[0]);
+                    setEndDate(end.toISOString().split('T')[0]);
+                  } else if (range === 'year') {
+                    const end = new Date();
+                    const start = new Date();
+                    start.setFullYear(end.getFullYear() - 1);
+                    setStartDate(start.toISOString().split('T')[0]);
+                    setEndDate(end.toISOString().split('T')[0]);
+                  }
+                }}
+                className={`chip whitespace-nowrap flex-shrink-0 ${timeRange === range ? 'chip-active' : 'chip-inactive'}`}
+              >
+                {range.charAt(0).toUpperCase() + range.slice(1)}
+              </button>
+            ))}
             <DateRangePicker
               startDate={startDate}
               endDate={endDate}
@@ -161,7 +162,7 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <div className="max-w-4xl mx-auto px-6 py-8 space-y-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8">
         {isLoading ? (
           <div className="space-y-6">
             <div className="skeleton h-64 rounded-2xl" />
