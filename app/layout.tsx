@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import PWAInstallPrompt from './components/PWAInstallPrompt';
 import ServiceWorkerRegistration from './components/ServiceWorkerRegistration';
+import PageSwiper from './components/PageSwiper';
 
 export const metadata: Metadata = {
   title: 'Pocket Budget - Fast Expense Tracking',
@@ -43,7 +44,9 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className="min-h-screen antialiased overflow-x-hidden">
-        {children}
+        <PageSwiper>
+          {children}
+        </PageSwiper>
         <PWAInstallPrompt />
         <ServiceWorkerRegistration />
       </body>

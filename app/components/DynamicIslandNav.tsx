@@ -2,114 +2,13 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { haptic } from '@/lib/haptics';
-import { useEffect, useRef, useState } from 'react';
 
 export default function DynamicIslandNav() {
   const pathname = usePathname();
   const router = useRouter();
-  const touchStartX = useRef<number>(0);
-  const touchStartY = useRef<number>(0);
-  const touchEndX = useRef<number>(0);
-  const touchEndY = useRef<number>(0);
-  const isSwiping = useRef<boolean>(false);
-  const swipeDirection = useRef<'horizontal' | 'vertical' | null>(null);
 
   const pages = ['/', '/history', '/dashboard', '/settings'];
   const currentIndex = pages.indexOf(pathname);
-
-  useEffect(() => {
-    const handleTouchStart = (e: TouchEvent) => {
-      // Ignore if touch started on an interactive element
-      const target = e.target as HTMLElement;
-      if (
-        target.tagName === 'BUTTON' ||
-        target.tagName === 'INPUT' ||
-        target.tagName === 'A' ||
-        target.tagName === 'TEXTAREA' ||
-        target.closest('button') ||
-        target.closest('a') ||
-        target.closest('input') ||
-        target.closest('[role="button"]')
-      ) {
-        isSwiping.current = false;
-        return;
-      }
-
-      // Ignore if touch started on a horizontally scrollable element
-      const scrollableParent = target.closest('.overflow-x-auto, .overflow-x-scroll, .touch-pan-x');
-      if (scrollableParent) {
-        isSwiping.current = false;
-        return;
-      }
-
-      touchStartX.current = e.touches[0].clientX;
-      touchStartY.current = e.touches[0].clientY;
-      isSwiping.current = true;
-      swipeDirection.current = null;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (!isSwiping.current) return;
-
-      touchEndX.current = e.touches[0].clientX;
-      touchEndY.current = e.touches[0].clientY;
-
-      // Determine swipe direction if not yet determined
-      if (swipeDirection.current === null) {
-        const diffX = Math.abs(touchEndX.current - touchStartX.current);
-        const diffY = Math.abs(touchEndY.current - touchStartY.current);
-
-        // Only consider it a swipe if movement is significant
-        if (diffX > 10 || diffY > 10) {
-          // Determine if swipe is more horizontal or vertical
-          swipeDirection.current = diffX > diffY ? 'horizontal' : 'vertical';
-          
-          // If vertical swipe, cancel the swipe gesture
-          if (swipeDirection.current === 'vertical') {
-            isSwiping.current = false;
-          }
-        }
-      }
-    };
-
-    const handleTouchEnd = () => {
-      if (!isSwiping.current || swipeDirection.current !== 'horizontal') {
-        isSwiping.current = false;
-        swipeDirection.current = null;
-        return;
-      }
-
-      const differenceX = touchStartX.current - touchEndX.current;
-      const differenceY = Math.abs(touchEndY.current - touchStartY.current);
-      const threshold = 80; // Increased threshold for better accuracy
-
-      // Only trigger if horizontal movement is significant and vertical is minimal
-      if (Math.abs(differenceX) > threshold && differenceY < 50) {
-        if (differenceX > 0 && currentIndex < pages.length - 1) {
-          // Swipe left - go to next page
-          haptic('light');
-          router.push(pages[currentIndex + 1]);
-        } else if (differenceX < 0 && currentIndex > 0) {
-          // Swipe right - go to previous page
-          haptic('light');
-          router.push(pages[currentIndex - 1]);
-        }
-      }
-
-      isSwiping.current = false;
-      swipeDirection.current = null;
-    };
-
-    document.addEventListener('touchstart', handleTouchStart, { passive: true });
-    document.addEventListener('touchmove', handleTouchMove, { passive: true });
-    document.addEventListener('touchend', handleTouchEnd, { passive: true });
-
-    return () => {
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchmove', handleTouchMove);
-      document.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, [currentIndex, router]);
 
   const handleNavClick = (path: string) => {
     haptic('light');
