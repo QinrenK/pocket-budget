@@ -2,13 +2,14 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import { haptic } from '@/lib/haptics';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export default function DynamicIslandNav() {
   const pathname = usePathname();
   const router = useRouter();
   const touchStartX = useRef<number>(0);
   const touchEndX = useRef<number>(0);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const pages = ['/', '/history', '/dashboard', '/settings'];
   const currentIndex = pages.indexOf(pathname);
@@ -50,30 +51,60 @@ export default function DynamicIslandNav() {
     };
   }, [currentIndex, router]);
 
+  // Detect scroll to adjust nav bar transparency
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollThreshold = 50;
+      setIsScrolled(window.scrollY > scrollThreshold);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Check initial state
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   const handleNavClick = (path: string) => {
     haptic('light');
     router.push(path);
   };
 
   return (
-    <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
+    <div className="fixed bottom-0 left-0 right-0 z-[100] pb-safe">
+      {/* Backdrop blur layer - covers full width */}
       <div
-        className="
-          relative overflow-hidden
-          w-[540px] h-[56px] rounded-full
-          transition-all duration-300 ease-out
-        "
-      >
-        {/* Glassmorphism background */}
+        className={`
+          absolute inset-0 -top-20 transition-all duration-300
+          ${isScrolled ? 'bg-black/10 backdrop-blur-md' : 'bg-transparent'}
+        `}
+      />
+      
+      {/* Navigation Island */}
+      <div className="relative flex justify-center py-4">
         <div
           className="
-            absolute inset-0
-            bg-gradient-to-b from-ws-gray-900/95 to-ws-gray-900/90
-            backdrop-blur-2xl
-            border border-white/10
-            shadow-2xl
+            relative overflow-hidden
+            w-[540px] max-w-[calc(100vw-32px)] h-[56px] rounded-full
+            transition-all duration-300 ease-out
           "
-        />
+        >
+          {/* Glassmorphism background */}
+          <div
+            className={`
+              absolute inset-0
+              transition-all duration-300
+              backdrop-blur-2xl
+              border border-white/10
+              shadow-2xl
+              ${
+                isScrolled
+                  ? 'bg-gradient-to-b from-ws-gray-900/98 to-ws-gray-900/95'
+                  : 'bg-gradient-to-b from-ws-gray-900/95 to-ws-gray-900/90'
+              }
+            `}
+          />
 
         {/* Active indicator background - slides smoothly */}
         <div

@@ -175,7 +175,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-ws-gray-50 pb-32 page-transition">
+    <main className="min-h-screen bg-ws-gray-50 pb-24 page-transition">
       {/* Hero Section - Input Area */}
       <section className="bg-white px-6 pt-safe pt-12 pb-8 border-b border-ws-gray-300">
         <div className="max-w-2xl mx-auto">
