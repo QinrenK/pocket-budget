@@ -464,10 +464,11 @@ export function parseReceipt(text: string): ReceiptData {
   let date: string | undefined;
   const items: string[] = [];
   
-  // Pattern for amounts: $12.34, 12.34, $12, etc.
-  const amountPattern = /\$?\s*(\d+[.,]\d{2}|\d+)/g;
+  // IMPROVED: More precise amount pattern that avoids matching phone numbers, dates, etc.
+  // Only match amounts with $ sign or decimal point, reasonable range
+  const amountPattern = /\$\s*(\d{1,6}(?:[.,]\d{2})?)|\b(\d{1,4}\.\d{2})\b/g;
   
-  // Pattern for dates: YYYY-MM-DD, MM/DD/YYYY, DD-MM-YYYY, etc.
+  // Pattern for dates
   const datePattern = /(\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[-/]\d{1,2}[-/]\d{2,4})/;
   
   // Known Toronto vendors (from our categories)
@@ -475,6 +476,7 @@ export function parseReceipt(text: string): ReceiptData {
     't&t', 'h mart', 'loblaws', 'metro', 'sobeys', 'no frills', 'food basics',
     'anju', 'kinton', 'chatime', 'coco', 'starbucks', 'tim hortons',
     'shoppers', 'rexall', 'walmart', 'costco', 'dollarama',
+    'freshway', 'whole foods', 'wholefoods',  // Added from your receipts
   ];
   
   // Extract vendor (usually first line)
@@ -491,23 +493,71 @@ export function parseReceipt(text: string): ReceiptData {
     }
   }
   
-  // Extract amounts
-  const amounts: number[] = [];
-  for (const line of lines) {
-    const matches = line.match(amountPattern);
-    if (matches) {
-      for (const match of matches) {
-        const num = parseFloat(match.replace(/[$,]/g, '').replace(',', '.'));
-        if (!isNaN(num) && num > 0) {
-          amounts.push(num);
+  // CRITICAL FIX: Smart total extraction
+  // Look for "TOTAL", "BALANCE", "AMOUNT" keywords first
+  let totalFound = false;
+  const totalKeywords = ['total', 'balance', 'amount', 'balance to pay', 'grand total', 'final total'];
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].toLowerCase();
+    
+    // Check if this line contains a total keyword
+    for (const keyword of totalKeywords) {
+      if (line.includes(keyword) && !line.includes('sub') && !line.includes('before')) {
+        // Extract amount from this line or next line
+        const combinedLine = line + ' ' + (lines[i + 1] || '');
+        const matches = combinedLine.match(amountPattern);
+        
+        if (matches) {
+          for (const match of matches) {
+            const cleanMatch = match.replace(/[$,\s]/g, '');
+            const num = parseFloat(cleanMatch);
+            
+            // Reasonable receipt amount: $0.01 to $9,999.99
+            if (!isNaN(num) && num > 0 && num < 10000) {
+              amount = num;
+              totalFound = true;
+              break;
+            }
+          }
+        }
+        if (totalFound) break;
+      }
+    }
+    if (totalFound) break;
+  }
+  
+  // Fallback: If no total keyword found, collect all amounts and take the last reasonable one
+  if (!totalFound) {
+    const amounts: number[] = [];
+    for (const line of lines) {
+      // Skip lines with phone numbers, dates, transaction IDs
+      if (line.match(/\d{3}[-\s]?\d{3}[-\s]?\d{4}/) || // Phone: 905-305-7776
+          line.match(/\d{10,}/) || // Long numbers: transaction IDs
+          line.toLowerCase().includes('lane') ||
+          line.toLowerCase().includes('trans') ||
+          line.toLowerCase().includes('terminal')) {
+        continue;
+      }
+      
+      const matches = line.match(amountPattern);
+      if (matches) {
+        for (const match of matches) {
+          const cleanMatch = match.replace(/[$,\s]/g, '');
+          const num = parseFloat(cleanMatch);
+          
+          // Only accept reasonable amounts
+          if (!isNaN(num) && num > 0 && num < 10000) {
+            amounts.push(num);
+          }
         }
       }
     }
-  }
-  
-  // Total is usually the largest amount or last amount
-  if (amounts.length > 0) {
-    amount = Math.max(...amounts);
+    
+    // Total is usually the last amount (after all items)
+    if (amounts.length > 0) {
+      amount = amounts[amounts.length - 1];
+    }
   }
   
   // Extract date

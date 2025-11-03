@@ -55,6 +55,7 @@ export default function CameraCapture({ onCapture, onClose }: CameraCaptureProps
           width: { ideal: 1920 },
           height: { ideal: 1080 },
         },
+        audio: false,  // CRITICAL: Disable audio/microphone access
       });
 
       setStream(mediaStream);
